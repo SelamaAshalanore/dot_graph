@@ -1,8 +1,8 @@
 
 #[cfg(test)]
 mod tests {
-    use dot_graph::{LabelledGraph, edge, edge_with_arrows};
-    use dot_graph::{Id, render, Style, Kind, DefaultStyleGraph, id_name};
+    use dot_graph::{LabelledGraph, edge, edge_with_arrows, Graph, Kind};
+    use dot_graph::{Id, render, Style, DefaultStyleGraph, id_name};
     use dot_graph::{Arrow, ArrowShape, Side};
     use std::io;
     use std::io::prelude::*;
@@ -21,8 +21,8 @@ mod tests {
 
     #[test]
     fn empty_graph() {
-        let r = test_input(LabelledGraph::new("empty_graph", vec![], vec![], None));
-        assert_eq!(r.unwrap(),
+        let graph = Graph::new("empty_graph", Kind::Digraph);
+        assert_eq!(graph.to_dot_string().unwrap(),
 r#"digraph empty_graph {
 }
 "#);

@@ -1,10 +1,12 @@
 use crate::{
     node::{Node},
-    edge::{Edge, edge},
+    edge::{Edge, edge, EdgeTrait},
     style::{Style},
     id::{Id, id_name},
 };
 use std::borrow::Cow;
+use std::io::prelude::*;
+use std::io;
 
 pub type Nodes<'a,N> = Cow<'a,[N]>;
 
@@ -37,6 +39,76 @@ pub trait GraphWalk<'a, N: Clone> {
     #[inline]
     fn kind(&self) -> Kind {
         Kind::Digraph
+    }
+}
+
+pub struct Graph {
+    name: String,
+    kind: Kind,
+    nodes: Vec<Node>,
+    edges: Vec<Edge>
+}
+
+impl Graph {
+    pub fn new(name: &str, kind: Kind) -> Graph {
+        Graph { name: String::from(name), kind: kind, nodes: vec![], edges: vec![] }
+    }
+
+    pub fn add_node(&mut self, node: Node) -> () {
+        self.nodes.push(node);
+    }
+
+    pub fn add_edge(&mut self, edge: Edge) -> () {
+        self.edges.push(edge);
+    }
+
+    pub fn to_dot_string(&self) -> io::Result<String> {
+        let mut writer = Vec::new();
+        self.render_opts(&mut writer).unwrap();
+        let mut s = String::new();
+        Read::read_to_string(&mut &*writer, &mut s)?;
+        Ok(s)
+    }
+
+    /// Renders graph `g` into the writer `w` in DOT syntax.
+    /// (Main entry point for the library.)
+    fn render_opts<'a,
+                    W: Write>
+        (&self,
+        w: &mut W)
+        -> io::Result<()> {
+        fn writeln<W: Write>(w: &mut W, arg: &[&str]) -> io::Result<()> {
+            for &s in arg {
+                w.write_all(s.as_bytes())?;
+            }
+            write!(w, "\n")
+        }
+
+        fn indent<W: Write>(w: &mut W) -> io::Result<()> {
+            w.write_all(b"    ")
+        }
+
+        let options = &[];
+
+        writeln(w, &[self.kind.keyword(), " ", self.name.as_str(), " {"])?;
+        for n in self.nodes.iter() {
+            indent(w)?;
+            let mut text: Vec<&str> = vec![];
+            let node_dot_string: String = n.to_dot_string(options);
+            text.push(&node_dot_string.as_str());
+            writeln(w, &text)?;
+        }
+
+        let edge_symbol = self.kind.edgeop();
+        for e in self.edges.iter() {
+            indent(w)?;
+            let mut text: Vec<&str> = vec![];
+            let edge_dot_string: String = e.to_dot_string(edge_symbol, options);
+            text.push(&edge_dot_string.as_str());
+            writeln(w, &text)?;
+        }
+
+        writeln(w, &["}"])
     }
 }
 
