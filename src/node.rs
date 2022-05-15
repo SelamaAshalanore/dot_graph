@@ -27,6 +27,21 @@ impl Node {
         Node { name: String::from(name), label: label.to_string(), style: style, color: color, index: 0, shape: shape }
     }
 
+    pub fn set_label(&mut self, label: &str) -> () {
+        self.label = String::from(label);
+    }
+
+    pub fn set_style(&mut self, style: Style) -> () {
+        self.style = style;
+    }
+
+    pub fn set_shape(&mut self, shape: Option<&str>) -> () {
+        match shape {
+            Some(s) => self.shape = Some(String::from(s)),
+            None => self.shape = None
+        }
+    }
+
     pub fn node_id(&self) -> &str {
         self.name.as_str()
     }
