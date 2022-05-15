@@ -20,3 +20,6 @@ The API is currently under rebuild. Please refer to tests for API usage. We'll p
 dot_graph is primarily distributed under the terms of both the MIT license and the Apache License (Version 2.0).
 
 See LICENSE-APACHE and LICENSE-MIT for details.
+
+## Related Project
+[rudg](https://github.com/SelamaAshalanore/rudg): Rust UML Diagram Generator. A library for generating UML diagram from Rust source code.
