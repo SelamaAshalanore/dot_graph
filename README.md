@@ -1,4 +1,4 @@
-# dot-graph
+# dot_graph
 
 A library for generating Graphviz DOT language files.
 The code is forked from [dot-rust](https://github.com/przygienda/dot-rust) with new API for easier to use.
@@ -17,6 +17,6 @@ The API is currently under rebuild. Please refer to tests for API usage. We'll p
 - We belive that TDD(Test-Driven Development) approach is helpful not only in development, but also in communication with each other. So adding more tests might be a good way to report a bug or even suggest a new feature.
 
 ## License
-dot-graph is primarily distributed under the terms of both the MIT license and the Apache License (Version 2.0).
+dot_graph is primarily distributed under the terms of both the MIT license and the Apache License (Version 2.0).
 
 See LICENSE-APACHE and LICENSE-MIT for details.
