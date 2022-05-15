@@ -152,9 +152,7 @@ impl LabelledGraph {
                 Some(ref styles) => styles[i],
                 None => Style::None,
             };
-            let mut node: Node = Node::new(id_name(&i).as_slice());
-            node.set_label(&node_label);
-            node.set_style(node_style);
+            let node: Node = Node::new(id_name(&i).as_slice()).label(&node_label).style(node_style);
             nodes.push(node);
         };
         let mut new_node_labels: Vec<Option<String>> = vec![];
@@ -263,9 +261,9 @@ impl DefaultStyleGraph {
             edges: results,
             kind: kind,
             node_vec: (0..nodes).map(|index| {
-                let mut node: Node = Node::new(id_name(&index).as_slice());
-                node.set_label(&id_name(&index).as_slice());
-                node
+                // let mut node: Node = Node::new(id_name(&index).as_slice());
+                // node.set_label(&id_name(&index).as_slice());
+                Node::new(id_name(&index).as_slice())
         }).collect()
         }
     }

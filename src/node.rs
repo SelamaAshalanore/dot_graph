@@ -7,47 +7,45 @@ use crate::{
     render::{RenderOption}
 };
 
+#[derive(Clone)]
 pub struct Node {
     pub name: String,
-    pub label: String,
-    pub style: Style,
-    pub color: Option<&'static str>,
-    pub index: usize,
-    pub shape: Option<String>
-}
-
-impl Clone for Node {
-    fn clone(&self) -> Self {
-        Node { name: self.name.clone(), label: self.label.clone(), style: self.style.clone(), color: self.color, index: self.index , shape: self.shape.clone()}
-    }
+    label: String,
+    style: Style,
+    color: Option<&'static str>,
+    shape: Option<String>
 }
 
 impl Node {
     pub fn new(name: &str) -> Self {
-        Node { name: String::from(name), label: String::from(name), style: Style::None, color: None, index: 0, shape: None }
+        Node { name: String::from(name), label: String::from(name), style: Style::None, color: None, shape: None }
     }
 
-    pub fn new_without_label(name: &str) -> Self {
-        Node { name: String::from(name), label: String::new(), style: Style::None, color: None, index: 0, shape: None }
+    pub fn label(&self, label: &str) -> Self {
+        let mut node = self.clone();
+        node.label = String::from(label);
+        node
     }
 
-    pub fn set_label(&mut self, label: &str) -> () {
-        self.label = String::from(label);
+    pub fn style(&self, style: Style) -> Self {
+        let mut node = self.clone();
+        node.style = style;
+        node
     }
 
-    pub fn set_style(&mut self, style: Style) -> () {
-        self.style = style;
-    }
-
-    pub fn set_shape(&mut self, shape: Option<&str>) -> () {
+    pub fn shape(&self, shape: Option<&str>) -> Self {
+        let mut node = self.clone();
         match shape {
-            Some(s) => self.shape = Some(String::from(s)),
-            None => self.shape = None
+            Some(s) => node.shape = Some(String::from(s)),
+            None => node.shape = None
         }
+        node
     }
 
-    pub fn set_color(&mut self, color: Option<&'static str>) -> () {
-        self.color = color;
+    pub fn color(&self, color: Option<&'static str>) -> Self {
+        let mut node = self.clone();
+        node.color = color;
+        node
     }
 
     pub fn node_id(&self) -> &str {

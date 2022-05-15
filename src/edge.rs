@@ -9,15 +9,15 @@ pub trait EdgeTrait {
     fn to_dot_string(&self, edge_symbol: &str, options: &[RenderOption]) -> String;
 }
 
-
+#[derive(Clone)]
 pub struct Edge {
-    pub from: String,
-    pub to: String,
-    pub label: &'static str,
-    pub style: Style,
-    pub start_arrow: Arrow,
-    pub end_arrow: Arrow,
-    pub color: Option<&'static str>,
+    from: String,
+    to: String,
+    label: &'static str,
+    style: Style,
+    start_arrow: Arrow,
+    end_arrow: Arrow,
+    color: Option<&'static str>,
 }
 
 impl Edge {
@@ -25,24 +25,34 @@ impl Edge {
         Edge { from: String::from(from), to: String::from(to), label: label, style: Style::None, start_arrow: Arrow::default(), end_arrow: Arrow::default(), color: None }
     }
 
-    pub fn set_label(&mut self, label: &'static str) -> () {
-        self.label = label;
+    pub fn label(&mut self, label: &'static str) -> Self {
+        let mut edge = self.clone();
+        edge.label = label;
+        edge
     }
 
-    pub fn set_style(&mut self, style: Style) -> () {
-        self.style = style;
+    pub fn style(&mut self, style: Style) -> Self {
+        let mut edge = self.clone();
+        edge.style = style;
+        edge
     }
 
-    pub fn set_color(&mut self, color: Option<&'static str>) -> () {
-        self.color = color;
+    pub fn color(&mut self, color: Option<&'static str>) -> Self {
+        let mut edge = self.clone();
+        edge.color = color;
+        edge
     }
 
-    pub fn set_start_arrow(&mut self, arrow: Arrow) -> () {
-        self.start_arrow = arrow;
+    pub fn start_arrow(&mut self, arrow: Arrow) -> Self {
+        let mut edge = self.clone();
+        edge.start_arrow = arrow;
+        edge
     }
 
-    pub fn set_end_arrow(&mut self, arrow: Arrow) -> () {
-        self.end_arrow = arrow;
+    pub fn end_arrow(&mut self, arrow: Arrow) -> Self {
+        let mut edge = self.clone();
+        edge.end_arrow = arrow;
+        edge
     }
 }
 
