@@ -1,7 +1,7 @@
 
 #[cfg(test)]
 mod tests {
-    use dot_graph::{LabelledGraph, edge, edge_with_arrows, Graph, Kind};
+    use dot_graph::{LabelledGraph, edge, edge_with_arrows, Graph, Kind, Node, Edge};
     use dot_graph::{Id, render, Style, DefaultStyleGraph, id_name};
     use dot_graph::{Arrow, ArrowShape, Side};
     use std::io;
@@ -30,8 +30,10 @@ r#"digraph empty_graph {
 
     #[test]
     fn single_node() {
-        let r = test_input(LabelledGraph::new("single_node", vec![None], vec![], None));
-        assert_eq!(r.unwrap(),
+        let mut graph = Graph::new("single_node", Kind::Digraph);
+        let node = Node::new_with_label("N0");
+        graph.add_node(node);
+        assert_eq!(graph.to_dot_string().unwrap(),
 r#"digraph single_node {
     N0[label="N0"];
 }
@@ -40,9 +42,11 @@ r#"digraph single_node {
 
     #[test]
     fn single_node_with_style() {
-        let styles = Some(vec![Style::Dashed]);
-        let r = test_input(LabelledGraph::new("single_node", vec![None], vec![], styles));
-        assert_eq!(r.unwrap(),
+        let mut graph = Graph::new("single_node", Kind::Digraph);
+        let mut node = Node::new_with_label("N0");
+        node.set_style(Style::Dashed);
+        graph.add_node(node);
+        assert_eq!(graph.to_dot_string().unwrap(),
 r#"digraph single_node {
     N0[label="N0"][style="dashed"];
 }

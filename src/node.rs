@@ -23,8 +23,12 @@ impl Clone for Node {
 }
 
 impl Node {
-    pub fn new(name: &str, label: &str, style: Style, color: Option<&'static str>, shape: Option<String>) -> Self {
-        Node { name: String::from(name), label: label.to_string(), style: style, color: color, index: 0, shape: shape }
+    pub fn new(name: &str) -> Self {
+        Node { name: String::from(name), label: String::new(), style: Style::None, color: None, index: 0, shape: None }
+    }
+
+    pub fn new_with_label(name_label: &str) -> Self {
+        Node { name: String::from(name_label), label: String::from(name_label), style: Style::None, color: None, index: 0, shape: None }
     }
 
     pub fn set_label(&mut self, label: &str) -> () {
@@ -40,6 +44,10 @@ impl Node {
             Some(s) => self.shape = Some(String::from(s)),
             None => self.shape = None
         }
+    }
+
+    pub fn set_color(&mut self, color: Option<&'static str>) -> () {
+        self.color = color;
     }
 
     pub fn node_id(&self) -> &str {
