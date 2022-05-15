@@ -2,7 +2,7 @@
 #[cfg(test)]
 mod tests {
     use dot_graph::{Graph, Kind, Node, Edge};
-    use dot_graph::{Id, Style};
+    use dot_graph::{Style};
     use dot_graph::{Arrow, ArrowShape, Side};
 
     // All of the tests use raw-strings as the format for the expected outputs,
@@ -209,15 +209,6 @@ r#"digraph test_some_labelled {
     }
 
     #[test]
-    fn badly_formatted_id() {
-        let id2 = Id::new("Weird { struct : ure } !!!");
-        match id2 {
-            Ok(_) => panic!("graphviz id suddenly allows spaces, brackets and stuff"),
-            Err(..) => {}
-        }
-    }
-
-    #[test]
     fn default_style_graph() {
         let mut graph = Graph::new("g", Kind::Graph);
         graph.add_node(Node::new("N0"));
@@ -240,5 +231,23 @@ r#"graph g {
     N2 -- N3[label=""];
 }
 "#);
+    }
+
+    #[test]
+    #[should_panic]
+    fn badly_formatted_id() {
+        let mut graph = Graph::new("g", Kind::Graph);
+        graph.add_node(Node::new("Weird { struct : ure } !!!"));
+        let result = graph.to_dot_string();
+        result.unwrap();
+    }
+
+    #[test]
+    #[should_panic]
+    fn edge_has_unrecognized_nodes() {
+        let mut graph = Graph::new("g", Kind::Graph);
+        graph.add_edge(Edge::new("N0", "N1", "test"));
+        let result = graph.to_dot_string();
+        result.unwrap();
     }
 }
