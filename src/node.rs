@@ -24,11 +24,11 @@ impl Clone for Node {
 
 impl Node {
     pub fn new(name: &str) -> Self {
-        Node { name: String::from(name), label: String::new(), style: Style::None, color: None, index: 0, shape: None }
+        Node { name: String::from(name), label: String::from(name), style: Style::None, color: None, index: 0, shape: None }
     }
 
-    pub fn new_with_label(name_label: &str) -> Self {
-        Node { name: String::from(name_label), label: String::from(name_label), style: Style::None, color: None, index: 0, shape: None }
+    pub fn new_without_label(name: &str) -> Self {
+        Node { name: String::from(name), label: String::new(), style: Style::None, color: None, index: 0, shape: None }
     }
 
     pub fn set_label(&mut self, label: &str) -> () {

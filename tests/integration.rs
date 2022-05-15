@@ -31,7 +31,7 @@ r#"digraph empty_graph {
     #[test]
     fn single_node() {
         let mut graph = Graph::new("single_node", Kind::Digraph);
-        let node = Node::new_with_label("N0");
+        let node = Node::new("N0");
         graph.add_node(node);
         assert_eq!(graph.to_dot_string().unwrap(),
 r#"digraph single_node {
@@ -43,7 +43,7 @@ r#"digraph single_node {
     #[test]
     fn single_node_with_style() {
         let mut graph = Graph::new("single_node", Kind::Digraph);
-        let mut node = Node::new_with_label("N0");
+        let mut node = Node::new("N0");
         node.set_style(Style::Dashed);
         graph.add_node(node);
         assert_eq!(graph.to_dot_string().unwrap(),
