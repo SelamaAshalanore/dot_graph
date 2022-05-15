@@ -20,6 +20,32 @@ pub struct Edge {
     pub color: Option<&'static str>,
 }
 
+impl Edge {
+    pub fn new(from: &str, to: &str, label: &'static str) -> Self {
+        Edge { from: String::from(from), to: String::from(to), label: label, style: Style::None, start_arrow: Arrow::default(), end_arrow: Arrow::default(), color: None }
+    }
+
+    pub fn set_label(&mut self, label: &'static str) -> () {
+        self.label = label;
+    }
+
+    pub fn set_style(&mut self, style: Style) -> () {
+        self.style = style;
+    }
+
+    pub fn set_color(&mut self, color: Option<&'static str>) -> () {
+        self.color = color;
+    }
+
+    pub fn set_start_arrow(&mut self, arrow: Arrow) -> () {
+        self.start_arrow = arrow;
+    }
+
+    pub fn set_end_arrow(&mut self, arrow: Arrow) -> () {
+        self.end_arrow = arrow;
+    }
+}
+
 impl EdgeTrait for Edge {
     fn to_dot_string(&self, edge_symbol: &str, options: &[RenderOption]) -> String {
         let colorstring: String;

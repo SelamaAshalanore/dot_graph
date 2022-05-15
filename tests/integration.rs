@@ -55,11 +55,11 @@ r#"digraph single_node {
 
     #[test]
     fn single_edge() {
-        let result = test_input(LabelledGraph::new("single_edge",
-                                                   vec![None, None],
-                                                   vec![edge(id_name(&0).as_slice(), id_name(&1).as_slice(), "E", Style::None, None)],
-                                                   None));
-        assert_eq!(result.unwrap(),
+        let mut graph = Graph::new("single_edge", Kind::Digraph);
+        graph.add_node(Node::new("N0"));
+        graph.add_node(Node::new("N1"));
+        graph.add_edge(Edge::new("N0", "N1", "E"));
+        assert_eq!(graph.to_dot_string().unwrap(),
 r#"digraph single_edge {
     N0[label="N0"];
     N1[label="N1"];
@@ -70,11 +70,14 @@ r#"digraph single_edge {
 
     #[test]
     fn single_edge_with_style() {
-        let result = test_input(LabelledGraph::new("single_edge",
-                                                   vec![None, None],
-                                                   vec![edge(id_name(&0).as_slice(), id_name(&1).as_slice(), "E", Style::Bold, Some("red"))],
-                                                   None));
-        assert_eq!(result.unwrap(),
+        let mut graph = Graph::new("single_edge", Kind::Digraph);
+        graph.add_node(Node::new("N0"));
+        graph.add_node(Node::new("N1"));
+        let mut e = Edge::new("N0", "N1", "E");
+        e.set_style(Style::Bold);
+        e.set_color(Some("red"));
+        graph.add_edge(e);
+        assert_eq!(graph.to_dot_string().unwrap(),
 r#"digraph single_edge {
     N0[label="N0"];
     N1[label="N1"];
