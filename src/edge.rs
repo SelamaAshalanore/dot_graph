@@ -5,10 +5,6 @@ use crate::{
     render::{RenderOption}
 };
 
-pub trait EdgeTrait {
-    fn to_dot_string(&self, edge_symbol: &str, options: &[RenderOption]) -> String;
-}
-
 #[derive(Clone)]
 pub struct Edge {
     from: String,
@@ -54,10 +50,8 @@ impl Edge {
         edge.end_arrow = arrow;
         edge
     }
-}
 
-impl EdgeTrait for Edge {
-    fn to_dot_string(&self, edge_symbol: &str, options: &[RenderOption]) -> String {
+    pub fn to_dot_string(&self, edge_symbol: &str, options: &[RenderOption]) -> String {
         let colorstring: String;
         let escaped_label: &String = &quote_string(self.label.into());
         let start_arrow_s: String = self.start_arrow.to_dot_string();
@@ -134,31 +128,5 @@ impl EdgeTrait for Edge {
 
         text.push(";");
         return text.into_iter().collect();
-    }
-}
-
-pub fn edge(from: &str, to: &str, label: &'static str, style: Style, color: Option<&'static str>) -> Edge {
-    Edge {
-        from: String::from(from),
-        to: String::from(to),
-        label: label,
-        style: style,
-        start_arrow: Arrow::default(),
-        end_arrow: Arrow::default(),
-        color: color,
-
-    }
-}
-
-pub fn edge_with_arrows(from: &str, to: &str, label: &'static str, style:Style,
-    start_arrow: Arrow, end_arrow: Arrow, color: Option<&'static str>) -> Edge {
-    Edge {
-        from: String::from(from),
-        to: String::from(to),
-        label: label,
-        style: style,
-        start_arrow: start_arrow,
-        end_arrow: end_arrow,
-        color: color,
     }
 }

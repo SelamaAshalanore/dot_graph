@@ -1,9 +1,7 @@
 
 #[cfg(test)]
 mod tests {
-    use dot_graph::{Graph, Kind, Node, Edge};
-    use dot_graph::{Style};
-    use dot_graph::{Arrow, ArrowShape, Side};
+    use dot_graph::{Graph, Kind, Node, Edge, Style, Arrow, ArrowShape, Side};
 
     // All of the tests use raw-strings as the format for the expected outputs,
     // so that you can cut-and-paste the content into a .dot file yourself to
