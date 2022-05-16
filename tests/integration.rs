@@ -239,13 +239,4 @@ r#"graph g {
         let result = graph.to_dot_string();
         result.unwrap();
     }
-
-    #[test]
-    #[should_panic]
-    fn edge_has_unrecognized_nodes() {
-        let mut graph = Graph::new("g", Kind::Graph);
-        graph.add_edge(Edge::new("N0", "N1", "test"));
-        let result = graph.to_dot_string();
-        result.unwrap();
-    }
 }
