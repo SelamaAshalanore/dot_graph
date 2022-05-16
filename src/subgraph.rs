@@ -52,18 +52,20 @@ impl Subgraph {
     }
 
     pub fn to_dot_string(&self) -> String {
-        let mut text = vec!["subgraph ", self.name.as_str(), " {\n    "];
+        let mut text = vec!["subgraph ", self.name.as_str(), " {\n        "];
 
         text.push("label=\"");
         text.push(self.label.as_str());
-        text.push("\";\n    ");
+        text.push("\";\n        ");
 
-        for node in &self.nodes {
-            text.push(node.name.as_str());
-            text.push(";\n    ");
-        }
+        let subgraph_node_names = self.nodes
+            .iter()
+            .map(|n| n.name.as_str())
+            .collect::<Vec<&str>>()
+            .join(";\n        ");
+        text.push(&subgraph_node_names);
 
-        text.push("}");
+        text.push(";\n    }");
         return text.into_iter().collect();
     }
 }

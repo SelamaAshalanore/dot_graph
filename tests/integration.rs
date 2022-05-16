@@ -248,14 +248,14 @@ r#"graph g {
         assert_eq!(graph.to_dot_string().unwrap(),
 r#"digraph di {
     subgraph cluster_0 {
-    label="";
-    N0;
-    N1;
+        label="";
+        N0;
+        N1;
     }
     subgraph cluster_1 {
-    label="";
-    N2;
-    N3;
+        label="";
+        N2;
+        N3;
     }
     N0[label="N0"];
     N1[label="N1"];
