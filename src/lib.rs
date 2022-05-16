@@ -259,7 +259,6 @@ pub mod arrow;
 pub mod node;
 pub mod edge;
 pub mod graph;
-pub mod render;
 mod utils;
 
 pub use style::Style;
