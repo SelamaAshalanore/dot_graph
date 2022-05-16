@@ -48,17 +48,13 @@ impl Node {
         node
     }
 
-    pub fn node_id(&self) -> &str {
-        self.name.as_str()
-    }
-
     pub fn to_dot_string(&self) -> String {
         let colorstring: String;
 
         let escaped: String = quote_string(self.label.clone());
         let shape: String;
 
-        let mut text = vec![self.node_id()];
+        let mut text = vec![self.name.as_str()];
 
         text.push("[label=");
         text.push(escaped.as_str());
