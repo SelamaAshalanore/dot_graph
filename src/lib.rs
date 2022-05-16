@@ -259,7 +259,6 @@ pub mod arrow;
 pub mod node;
 pub mod edge;
 pub mod graph;
-pub mod id;
 pub mod render;
 mod utils;
 

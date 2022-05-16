@@ -108,23 +108,7 @@ impl Edge {
             arrow_str.insert(0, '[');
             arrow_str.push_str("]");
             text.push(arrow_str.as_str());
-        }      
-        
-
-            // text.push("[");
-            // if !self.end_arrow.is_default() {
-            //     text.push("arrowhead=\"");
-            //     text.push(&end_arrow_s);
-            //     text.push("\"");
-            // }
-            // if !self.start_arrow.is_default() {
-            //     text.push("dir=\"both\" arrowtail=\"");
-            //     text.push(&start_arrow_s);
-            //     text.push("\"");
-            // }
-
-            // text.push("]");
-        
+        }
 
         text.push(";");
         return text.into_iter().collect();
