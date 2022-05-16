@@ -4,7 +4,6 @@
 use crate::{
     style::Style,
     utils::{quote_string},
-    render::{RenderOption}
 };
 
 #[derive(Clone)]
@@ -52,7 +51,7 @@ impl Node {
         self.name.as_str()
     }
 
-    pub fn to_dot_string(&self, options: &[RenderOption]) -> String {
+    pub fn to_dot_string(&self) -> String {
         let colorstring: String;
 
         let escaped: String = quote_string(self.label.clone());
@@ -60,27 +59,21 @@ impl Node {
 
         let mut text = vec![self.node_id()];
 
-        if !options.contains(&RenderOption::NoNodeLabels) {
-            text.push("[label=");
-            text.push(escaped.as_str());
-            text.push("]");
-        }
+        text.push("[label=");
+        text.push(escaped.as_str());
+        text.push("]");
 
-        let style = self.style;
-        if !options.contains(&RenderOption::NoNodeStyles) && style != Style::None {
+        if self.style != Style::None {
             text.push("[style=\"");
-            text.push(style.as_slice());
+            text.push(self.style.as_slice());
             text.push("\"]");
         }
 
-        let color = self.color;
-        if !options.contains(&RenderOption::NoNodeColors) {
-            if let Some(c) = color {
-                colorstring = quote_string(c.to_string());
-                text.push("[color=");
-                text.push(&colorstring);
-                text.push("]");
-            }
+        if let Some(c) = self.color {
+            colorstring = quote_string(c.to_string());
+            text.push("[color=");
+            text.push(&colorstring);
+            text.push("]");
         }
 
         if let Some(s) = self.shape.clone() {

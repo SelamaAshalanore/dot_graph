@@ -51,13 +51,11 @@ impl Graph {
             w.write_all(b"    ")
         }
 
-        let options = &[];
-
         writeln(w, &[self.kind.keyword(), " ", self.name.as_str(), " {"])?;
         for n in self.nodes.iter() {
             indent(w)?;
             let mut text: Vec<&str> = vec![];
-            let node_dot_string: String = n.to_dot_string(options);
+            let node_dot_string: String = n.to_dot_string();
             text.push(&node_dot_string.as_str());
             writeln(w, &text)?;
         }
