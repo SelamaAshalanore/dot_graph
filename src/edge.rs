@@ -4,6 +4,7 @@ use crate::{
     utils::{quote_string},
 };
 
+/// `Graph`'s edge.
 #[derive(Clone)]
 pub struct Edge {
     from: String,
