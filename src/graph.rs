@@ -1,6 +1,6 @@
 use crate::{
     node::{Node},
-    edge::{Edge},
+    edge::{Edge}, subgraph::Subgraph,
 };
 use std::io::prelude::*;
 use std::io;
@@ -10,12 +10,13 @@ pub struct Graph {
     name: String,
     kind: Kind,
     nodes: Vec<Node>,
-    edges: Vec<Edge>
+    edges: Vec<Edge>,
+    subgraph: Vec<Subgraph>
 }
 
 impl Graph {
     pub fn new(name: &str, kind: Kind) -> Graph {
-        Graph { name: String::from(name), kind: kind, nodes: vec![], edges: vec![] }
+        Graph { name: String::from(name), kind: kind, nodes: vec![], edges: vec![], subgraph: vec![] }
     }
 
     pub fn add_node(&mut self, node: Node) -> () {
@@ -24,6 +25,10 @@ impl Graph {
 
     pub fn add_edge(&mut self, edge: Edge) -> () {
         self.edges.push(edge);
+    }
+
+    pub fn add_subgraph(&mut self, subgraph: Subgraph) -> () {
+        self.subgraph.push(subgraph)
     }
 
     pub fn to_dot_string(&self) -> io::Result<String> {
@@ -53,6 +58,14 @@ impl Graph {
         }
 
         writeln(w, &[self.kind.keyword(), " ", self.name.as_str(), " {"])?;
+        for n in self.subgraph.iter() {
+            indent(w)?;
+            let mut text: Vec<&str> = vec![];
+            let subgraph_dot_string: String = n.to_dot_string();
+            text.push(&subgraph_dot_string.as_str());
+            writeln(w, &text)?;
+        }
+
         for n in self.nodes.iter() {
             indent(w)?;
             let mut text: Vec<&str> = vec![];
