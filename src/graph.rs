@@ -66,7 +66,7 @@ impl Graph {
         for e in self.edges.iter() {
             indent(w)?;
             let mut text: Vec<&str> = vec![];
-            let edge_dot_string: String = e.to_dot_string(edge_symbol, options);
+            let edge_dot_string: String = e.to_dot_string(edge_symbol);
             text.push(&edge_dot_string.as_str());
             writeln(w, &text)?;
         }

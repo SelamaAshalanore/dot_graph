@@ -2,7 +2,6 @@ use crate::{
     arrow::{Arrow},
     style::{Style},
     utils::{quote_string},
-    render::{RenderOption}
 };
 
 #[derive(Clone)]
@@ -51,7 +50,7 @@ impl Edge {
         edge
     }
 
-    pub fn to_dot_string(&self, edge_symbol: &str, options: &[RenderOption]) -> String {
+    pub fn to_dot_string(&self, edge_symbol: &str) -> String {
         let colorstring: String;
         let escaped_label: &String = &quote_string(self.label.into());
         let start_arrow_s: String = self.start_arrow.to_dot_string();
@@ -61,13 +60,11 @@ impl Edge {
                             edge_symbol, " ",
                             self.to.as_str()];
 
-        if !options.contains(&RenderOption::NoEdgeLabels) {
-            text.push("[label=");
-            text.push(escaped_label.as_str());
-            text.push("]");
-        }
+        text.push("[label=");
+        text.push(escaped_label.as_str());
+        text.push("]");
 
-        if !options.contains(&RenderOption::NoEdgeStyles) && self.style != Style::None {
+        if self.style != Style::None {
             text.push("[style=\"");
             text.push(self.style.as_slice());
             text.push("\"]");
@@ -79,30 +76,26 @@ impl Edge {
             },
             None => None,
         };
-        if !options.contains(&RenderOption::NoEdgeColors) {
-            if let Some(c) = color {
-                colorstring = quote_string(c);
-                text.push("[color=");
-                text.push(&colorstring);
-                text.push("]");
-            }
+        if let Some(c) = color {
+            colorstring = quote_string(c);
+            text.push("[color=");
+            text.push(&colorstring);
+            text.push("]");
         }
 
         let mut arrow_text: Vec<String> = vec![];
         let mut arrow_str: String = String::new();
-        if !options.contains(&RenderOption::NoArrows) &&
-            (!self.start_arrow.is_default() || !self.end_arrow.is_default()) {
-                
-                if !self.end_arrow.is_default() {
-                    arrow_text.push(vec!["arrowhead=\"", &end_arrow_s, "\""].into_iter().collect());
-                }
-                if !self.start_arrow.is_default() {
-                    arrow_text.push(vec!["arrowtail=\"", &start_arrow_s, "\""].into_iter().collect());
-                }
-                if !self.start_arrow.is_default() && !self.end_arrow.is_default() {
-                    arrow_text.push(String::from("dir=\"both\""));
-                }
+        if !self.start_arrow.is_default() || !self.end_arrow.is_default() {
+            if !self.end_arrow.is_default() {
+                arrow_text.push(vec!["arrowhead=\"", &end_arrow_s, "\""].into_iter().collect());
             }
+            if !self.start_arrow.is_default() {
+                arrow_text.push(vec!["arrowtail=\"", &start_arrow_s, "\""].into_iter().collect());
+            }
+            if !self.start_arrow.is_default() && !self.end_arrow.is_default() {
+                arrow_text.push(String::from("dir=\"both\""));
+            }
+        }
         if arrow_text.len() > 0 {
             arrow_str.push_str(&arrow_text.join(" "));
             arrow_str.insert(0, '[');
