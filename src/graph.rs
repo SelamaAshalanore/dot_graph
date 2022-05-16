@@ -1,137 +1,75 @@
 use crate::{
     node::{Node},
-    edge::{Edge, edge},
-    style::{Style},
-    id::{Id, id_name},
+    edge::{Edge},
 };
-use std::borrow::Cow;
+use std::io::prelude::*;
+use std::io;
 
-pub type Nodes<'a,N> = Cow<'a,[N]>;
-
-// (The type parameters in GraphWalk should be associated items,
-// when/if Rust supports such.)
-
-/// GraphWalk is an abstraction over a graph = (nodes,edges)
-/// made up of node handles `N` and edge handles `E`, where each `E`
-/// can be mapped to its source and target nodes.
-///
-/// The lifetime parameter `'a` is exposed in this trait (rather than
-/// introduced as a generic parameter on each method declaration) so
-/// that a client impl can choose `N` and `E` that have substructure
-/// that is bound by the self lifetime `'a`.
-///
-/// The `nodes` and `edges` method each return instantiations of
-/// `Cow<[T]>` to leave implementers the freedom to create
-/// entirely new vectors or to pass back slices into internally owned
-/// vectors.
-pub trait GraphWalk<'a, N: Clone> {
-    /// Returns all the nodes in this graph.
-    fn nodes(&'a self) -> Vec<&Node>;
-    /// Returns all of the edges in this graph.
-    fn edges(&'a self) -> Vec<&Edge>;
-
-    /// Must return a DOT compatible identifier naming the graph.
-    fn graph_id(&'a self) -> Id<'a>;
-
-    /// The kind of graph, defaults to `Kind::Digraph`.
-    #[inline]
-    fn kind(&self) -> Kind {
-        Kind::Digraph
-    }
-}
-
-
-
-pub struct LabelledGraph {
-    /// The name for this graph. Used for labelling generated `digraph`.
-    pub name: &'static str,
-
-    /// Each node is an index into `node_labels`; these labels are
-    /// used as the label text for each node. (The node *names*,
-    /// which are unique identifiers, are derived from their index
-    /// in this array.)
-    ///
-    /// If a node maps to None here, then just use its name as its
-    /// text.
-    pub node_labels: Vec<Option<String>>,
-
-    pub node_styles: Vec<Style>,
-
-    /// Each edge relates a from-index to a to-index along with a
-    /// label; `edges` collects them.
-    edges: Vec<Edge>,
-    nodes: Vec<Node>
-}
-
-impl LabelledGraph {
-    pub fn new(name: &'static str,
-            node_labels: Vec<Option<&str>>,
-            edges: Vec<Edge>,
-            node_styles: Option<Vec<Style>>)
-            -> LabelledGraph {
-        let count = node_labels.len();
-        let mut nodes: Vec<Node> = vec![];
-        for i in 0..count {
-            let node_label = match node_labels[i] {
-                Some(ref l) => (*l.clone()).into(),
-                None => id_name(&i).name().to_string(),
-            };
-            let node_style = match node_styles {
-                Some(ref styles) => styles[i],
-                None => Style::None,
-            };
-            let node: Node = Node::new(id_name(&i).as_slice(), &node_label, node_style, None, None);
-            nodes.push(node);
-        };
-        let mut new_node_labels: Vec<Option<String>> = vec![];
-        for s in node_labels {
-            match s {
-                Some(st) => new_node_labels.push(Some(String::from(st))),
-                None => new_node_labels.push(None)
-            }
-        }
-        LabelledGraph {
-            name: name,
-            node_labels: new_node_labels,
-            edges: edges,
-            node_styles: match node_styles {
-                Some(nodes) => nodes,
-                None => vec![Style::None; count],
-            },
-            nodes: nodes
-        }
-    }
-}
-
-pub fn new_graph(
-    name: &'static str,
+pub struct Graph {
+    name: String,
+    kind: Kind,
     nodes: Vec<Node>,
-    edges: Vec<Edge>,
-    node_styles: Option<Vec<Style>>)
-    -> LabelledGraph {
-    let node_labels: Vec<Option<String>> = nodes.iter().map(|n| Some(n.name.clone())).collect();
-    LabelledGraph {
-        name: name,
-        node_labels: node_labels,
-        edges: edges,
-        node_styles: match node_styles {
-            Some(nodes) => nodes,
-            None => vec![Style::None; nodes.len()],
-    },
-    nodes: nodes
-    }
+    edges: Vec<Edge>
 }
 
-impl<'a> GraphWalk<'a, Node> for LabelledGraph {
-    fn nodes(&'a self) -> Vec<&Node> {
-        self.nodes.iter().map(|node| node).collect()
-    }
-    fn edges(&'a self) -> Vec<&Edge> {
-        self.edges.iter().collect()
+impl Graph {
+    pub fn new(name: &str, kind: Kind) -> Graph {
+        Graph { name: String::from(name), kind: kind, nodes: vec![], edges: vec![] }
     }
 
-    fn graph_id(&'a self) -> Id<'a> {
-        Id::new(&self.name[..]).unwrap()
+    pub fn add_node(&mut self, node: Node) -> () {
+        self.nodes.push(node);
+    }
+
+    pub fn add_edge(&mut self, edge: Edge) -> () {
+        self.edges.push(edge);
+    }
+
+    pub fn to_dot_string(&self) -> io::Result<String> {
+        let mut writer = Vec::new();
+        self.render_opts(&mut writer).unwrap();
+        let mut s = String::new();
+        Read::read_to_string(&mut &*writer, &mut s)?;
+        Ok(s)
+    }
+
+    /// Renders graph `g` into the writer `w` in DOT syntax.
+    /// (Main entry point for the library.)
+    fn render_opts<'a,
+                    W: Write>
+        (&self,
+        w: &mut W)
+        -> io::Result<()> {
+        fn writeln<W: Write>(w: &mut W, arg: &[&str]) -> io::Result<()> {
+            for &s in arg {
+                w.write_all(s.as_bytes())?;
+            }
+            write!(w, "\n")
+        }
+
+        fn indent<W: Write>(w: &mut W) -> io::Result<()> {
+            w.write_all(b"    ")
+        }
+
+        writeln(w, &[self.kind.keyword(), " ", self.name.as_str(), " {"])?;
+        for n in self.nodes.iter() {
+            indent(w)?;
+            let mut text: Vec<&str> = vec![];
+            let node_dot_string: String = n.to_dot_string();
+            text.push(&node_dot_string.as_str());
+            writeln(w, &text)?;
+        }
+
+        let edge_symbol = self.kind.edgeop();
+        for e in self.edges.iter() {
+            indent(w)?;
+            let mut text: Vec<&str> = vec![];
+            let edge_dot_string: String = e.to_dot_string(edge_symbol);
+            text.push(&edge_dot_string.as_str());
+            writeln(w, &text)?;
+        }
+
+        writeln(w, &["}"])
     }
 }
 
@@ -159,52 +97,5 @@ impl Kind {
             Kind::Digraph => "->",
             Kind::Graph => "--",
         }
-    }
-}
-
-pub type SimpleEdge = (usize, usize);
-
-pub struct DefaultStyleGraph {
-    /// The name for this graph. Used for labelling generated graph
-    name: &'static str,
-    edges: Vec<Edge>,
-    kind: Kind,
-    node_vec: Vec<Node>
-}
-
-impl DefaultStyleGraph {
-    pub fn new(name: &'static str,
-            nodes: usize,
-            edges: Vec<SimpleEdge>,
-            kind: Kind)
-            -> DefaultStyleGraph {
-        assert!(!name.is_empty());
-        let mut results: Vec<Edge> = vec![];
-        for (start, end) in edges.iter() {
-            let edge = edge(id_name(start).as_slice(), id_name(end).as_slice(), "", Style::None, None);
-            results.push(edge);
-        }
-        DefaultStyleGraph {
-            name: name,
-            edges: results,
-            kind: kind,
-            node_vec: (0..nodes).map(|index| Node::new(id_name(&index).as_slice(), id_name(&index).as_slice(), Style::None, None, None)).collect()
-        }
-    }
-}
-
-impl<'a> GraphWalk<'a, Node> for DefaultStyleGraph {
-    fn nodes(&'a self) -> Vec<&Node> {
-        self.node_vec.iter().collect()
-    }
-    fn edges(&'a self) -> Vec<&Edge> {
-        self.edges.iter().collect()
-    }
-
-    fn graph_id(&'a self) -> Id<'a> {
-        Id::new(&self.name[..]).unwrap()
-    }
-    fn kind(&self) -> Kind {
-        self.kind
     }
 }

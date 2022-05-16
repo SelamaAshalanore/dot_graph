@@ -259,15 +259,11 @@ pub mod arrow;
 pub mod node;
 pub mod edge;
 pub mod graph;
-pub mod id;
-pub mod render;
 mod utils;
 
 pub use style::Style;
 pub use arrow::{Arrow, ArrowShape, Side, Fill};
 pub use node::{Node};
-pub use edge::{edge, edge_with_arrows, Edge};
-pub use graph::{GraphWalk, LabelledGraph, Nodes, Kind, DefaultStyleGraph, new_graph};
-pub use id::{Id, id_name};
-pub use render::{render, render_opts, graph_to_string};
+pub use edge::{Edge};
+pub use graph::{Graph, Kind};
 
