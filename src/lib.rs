@@ -254,11 +254,11 @@
 // !
 // ! * [DOT language](http://www.graphviz.org/doc/info/lang.html)
 
-pub mod style;
-pub mod arrow;
-pub mod node;
-pub mod edge;
-pub mod graph;
+mod style;
+mod arrow;
+mod node;
+mod edge;
+mod graph;
 mod utils;
 
 pub use style::Style;
