@@ -9,21 +9,21 @@ use crate::{
 pub struct Edge {
     from: String,
     to: String,
-    label: &'static str,
+    label: String,
     style: Style,
     start_arrow: Arrow,
     end_arrow: Arrow,
-    color: Option<&'static str>,
+    color: Option<String>,
 }
 
 impl Edge {
-    pub fn new(from: &str, to: &str, label: &'static str) -> Self {
-        Edge { from: String::from(from), to: String::from(to), label: label, style: Style::None, start_arrow: Arrow::default(), end_arrow: Arrow::default(), color: None }
+    pub fn new(from: &str, to: &str, label: &str) -> Self {
+        Edge { from: String::from(from), to: String::from(to), label: String::from(label), style: Style::None, start_arrow: Arrow::default(), end_arrow: Arrow::default(), color: None }
     }
 
-    pub fn label(&mut self, label: &'static str) -> Self {
+    pub fn label(&mut self, label: &str) -> Self {
         let mut edge = self.clone();
-        edge.label = label;
+        edge.label = String::from(label);
         edge
     }
 
@@ -33,9 +33,12 @@ impl Edge {
         edge
     }
 
-    pub fn color(&mut self, color: Option<&'static str>) -> Self {
+    pub fn color(&mut self, color: Option<&str>) -> Self {
         let mut edge = self.clone();
-        edge.color = color;
+        edge.color = match color {
+            Some(c) => Some(String::from(c)),
+            None => None
+        };
         edge
     }
 
@@ -53,7 +56,7 @@ impl Edge {
 
     pub fn to_dot_string(&self, edge_symbol: &str) -> String {
         let colorstring: String;
-        let escaped_label: &String = &quote_string(self.label.into());
+        let escaped_label: &String = &quote_string(self.label.clone());
         let start_arrow_s: String = self.start_arrow.to_dot_string();
         let end_arrow_s: String = self.end_arrow.to_dot_string();
 
@@ -71,9 +74,9 @@ impl Edge {
             text.push("\"]");
         }
 
-        let color: Option<String> = match self.color {
+        let color: Option<String> = match &self.color {
             Some(l) => {
-                Some((*l).into())
+                Some((*l).clone())
             },
             None => None,
         };

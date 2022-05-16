@@ -12,7 +12,7 @@ pub struct Node {
     pub name: String,
     label: String,
     style: Style,
-    color: Option<&'static str>,
+    color: Option<String>,
     shape: Option<String>
 }
 
@@ -42,14 +42,13 @@ impl Node {
         node
     }
 
-    pub fn color(&self, color: Option<&'static str>) -> Self {
+    pub fn color(&self, color: Option<&str>) -> Self {
         let mut node = self.clone();
-        node.color = color;
+        node.color = match color {
+            Some(c) => Some(String::from(c)),
+            None => None
+        };
         node
-    }
-
-    pub fn node_id(&self) -> &str {
-        self.name.as_str()
     }
 
     pub fn to_dot_string(&self) -> String {
@@ -58,7 +57,7 @@ impl Node {
         let escaped: String = quote_string(self.label.clone());
         let shape: String;
 
-        let mut text = vec![self.node_id()];
+        let mut text = vec![self.name.as_str()];
 
         text.push("[label=");
         text.push(escaped.as_str());
@@ -70,7 +69,7 @@ impl Node {
             text.push("\"]");
         }
 
-        if let Some(c) = self.color {
+        if let Some(c) = &self.color {
             colorstring = quote_string(c.to_string());
             text.push("[color=");
             text.push(&colorstring);
