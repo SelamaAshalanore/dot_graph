@@ -10,7 +10,7 @@ pub struct Subgraph {
     nodes: Vec<Node>,
     label: String,
     style: Style,
-    color: Option<&'static str>,
+    color: Option<String>,
 }
 
 impl Subgraph {
@@ -42,9 +42,12 @@ impl Subgraph {
         subg
     }
 
-    pub fn color(&self, color: Option<&'static str>) -> Self {
+    pub fn color(&self, color: Option<&str>) -> Self {
         let mut subg = self.clone();
-        subg.color = color;
+        subg.color = match color {
+            Some(c) => Some(String::from(c)),
+            None => None
+        };
         subg
     }
 }
