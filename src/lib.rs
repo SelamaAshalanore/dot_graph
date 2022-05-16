@@ -83,6 +83,7 @@ mod node;
 mod edge;
 mod graph;
 mod utils;
+mod subgraph;
 
 pub use style::Style;
 pub use arrow::{Arrow, ArrowShape, Side, Fill};
