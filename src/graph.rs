@@ -5,6 +5,7 @@ use crate::{
 use std::io::prelude::*;
 use std::io;
 
+/// Entry point of this library, use `to_dot_string` to get the string output.
 pub struct Graph {
     name: String,
     kind: Kind,

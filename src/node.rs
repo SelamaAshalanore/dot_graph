@@ -6,6 +6,7 @@ use crate::{
     utils::{quote_string},
 };
 
+/// `Graph`'s node
 #[derive(Clone)]
 pub struct Node {
     pub name: String,
