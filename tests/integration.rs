@@ -269,6 +269,61 @@ r#"digraph di {
     }
 
     #[test]
+    fn test_empty_subgraph() {
+        let mut graph = Graph::new("di", Kind::Digraph);
+        let c1 = Subgraph::new("cluster_0").label("process #1").style(Style::Filled).color(Some("lightgrey"));
+        graph.add_subgraph(c1);
+        
+
+        assert_eq!(graph.to_dot_string().unwrap(),
+r#"digraph di {
+    subgraph cluster_0 {
+        label="process #1";
+        style="filled";
+        color="lightgrey";
+    }
+}
+"#);
+    }
+
+    #[test]
+    fn test_subgraph_with_edges() {
+        let mut graph = Graph::new("di", Kind::Digraph);
+        let mut c1 = Subgraph::new("cluster_0").label("");
+        c1.add_node(Node::new("N0"));
+        c1.add_node(Node::new("N1"));
+        c1.add_edge(Edge::new("N0", "N1", ""));
+        let mut c2 = Subgraph::new("cluster_1").label("");
+        c2.add_node(Node::new("N2"));
+        c2.add_node(Node::new("N3"));
+        c2.add_edge(Edge::new("N2", "N3", ""));
+        graph.add_subgraph(c1);
+        graph.add_subgraph(c2);
+        graph.add_edge(Edge::new("N0", "N2", ""));
+        graph.add_edge(Edge::new("N1", "N3", ""));
+        
+
+        assert_eq!(graph.to_dot_string().unwrap(),
+r#"digraph di {
+    subgraph cluster_0 {
+        label="";
+        N0[label="N0"];
+        N1[label="N1"];
+        N0 -> N1[label=""];
+    }
+    subgraph cluster_1 {
+        label="";
+        N2[label="N2"];
+        N3[label="N3"];
+        N2 -> N3[label=""];
+    }
+    N0 -> N2[label=""];
+    N1 -> N3[label=""];
+}
+"#);
+    }
+
+    #[test]
     fn test_subgraph_with_format() {
         let mut graph = Graph::new("G", Kind::Digraph);
         let mut c0 = Subgraph::new("cluster_0").label("process #1").style(Style::Filled).color(Some("lightgrey"));
