@@ -60,12 +60,12 @@ impl Subgraph {
 
         let subgraph_node_names = self.nodes
             .iter()
-            .map(|n| n.name.as_str())
-            .collect::<Vec<&str>>()
-            .join(";\n        ");
+            .map(|n| n.to_dot_string())
+            .collect::<Vec<String>>()
+            .join("\n        ");
         text.push(&subgraph_node_names);
 
-        text.push(";\n    }");
+        text.push("\n    }");
         return text.into_iter().collect();
     }
 }

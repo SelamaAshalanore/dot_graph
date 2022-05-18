@@ -234,33 +234,26 @@ r#"graph g {
     #[test]
     fn test_subgraph() {
         let mut graph = Graph::new("di", Kind::Digraph);
-        graph.add_node(Node::new("N0"));
-        graph.add_node(Node::new("N1"));
-        graph.add_node(Node::new("N2"));
-        graph.add_node(Node::new("N3"));
+        graph.add_subgraph(Subgraph::new("cluster_0").label("").add_node(Node::new("N0")).add_node(Node::new("N1")));
+        graph.add_subgraph(Subgraph::new("cluster_1").label("").add_node(Node::new("N2")).add_node(Node::new("N3")));
         graph.add_edge(Edge::new("N0", "N1", ""));
         graph.add_edge(Edge::new("N0", "N2", ""));
         graph.add_edge(Edge::new("N1", "N3", ""));
         graph.add_edge(Edge::new("N2", "N3", ""));
-        graph.add_subgraph(Subgraph::new("cluster_0").label("").add_node(Node::new("N0")).add_node(Node::new("N1")));
-        graph.add_subgraph(Subgraph::new("cluster_1").label("").add_node(Node::new("N2")).add_node(Node::new("N3")));
+        
 
         assert_eq!(graph.to_dot_string().unwrap(),
 r#"digraph di {
     subgraph cluster_0 {
         label="";
-        N0;
-        N1;
+        N0[label="N0"];
+        N1[label="N1"];
     }
     subgraph cluster_1 {
         label="";
-        N2;
-        N3;
+        N2[label="N2"];
+        N3[label="N3"];
     }
-    N0[label="N0"];
-    N1[label="N1"];
-    N2[label="N2"];
-    N3[label="N3"];
     N0 -> N1[label=""];
     N0 -> N2[label=""];
     N1 -> N3[label=""];
