@@ -87,9 +87,30 @@ impl Subgraph {
             .map(|n| n.to_dot_string())
             .collect::<Vec<String>>()
             .join("\n        ");
-        text.push(&subgraph_node_names);
+        // in case push extra change line
+        if self.nodes.len() > 0 {
+            text.push(&subgraph_node_names);
+            text.push("\n    ");
+        }
+        
 
-        text.push("\n    }");
+        let edge_symbol = &self.edgeop;
+        let subgraph_edge_strs = self.edges
+            .iter()
+            .map(|e| e.to_dot_string(&edge_symbol))
+            .collect::<Vec<String>>()
+            .join("\n        ");
+        // in case push extra change line
+        if self.edges.len() > 0 {
+            text.push("    ");
+            text.push(&subgraph_edge_strs);
+            text.push("\n    ");
+        }
+
+        text.push("}");
+        
+
+        
         return text.into_iter().collect();
     }
 }
