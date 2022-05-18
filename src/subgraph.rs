@@ -1,7 +1,8 @@
 use crate::{
     node::Node,
     style::Style,
-    utils::quote_string, Edge
+    utils::quote_string, Edge,
+    Kind
 };
 
 /// `Graph`'s subgraph
@@ -13,11 +14,12 @@ pub struct Subgraph {
     label: String,
     style: Style,
     color: Option<String>,
+    edgeop: String,
 }
 
 impl Subgraph {
     pub fn new(name: &str) -> Self {
-        Subgraph { name: String::from(name), nodes: vec![], edges: vec![], label: String::new(), style: Style::None, color: None}
+        Subgraph { name: String::from(name), nodes: vec![], edges: vec![], label: String::new(), style: Style::None, color: None, edgeop: String::from(Kind::Digraph.edgeop())}
     }
 
     pub fn add_node(&mut self, node: Node) -> () {
@@ -50,6 +52,12 @@ impl Subgraph {
             Some(c) => Some(String::from(c)),
             None => None
         };
+        subg
+    }
+
+    pub fn edgeop(&self, edgeop: &str) -> Self {
+        let mut subg = self.clone();
+        subg.edgeop = String::from(edgeop);
         subg
     }
 

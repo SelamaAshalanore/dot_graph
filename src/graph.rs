@@ -28,7 +28,7 @@ impl Graph {
     }
 
     pub fn add_subgraph(&mut self, subgraph: Subgraph) -> () {
-        self.subgraph.push(subgraph)
+        self.subgraph.push(subgraph.edgeop(self.kind.edgeop()))
     }
 
     pub fn to_dot_string(&self) -> io::Result<String> {
