@@ -67,7 +67,7 @@ r#"digraph single_edge {
 "#);
 ```
 
-After version 0.1.1, dot_graph support subgraph generation, for example:
+After version 0.2.1, dot_graph support subgraph generation, for example:
 
 ```rust
 #[test]
