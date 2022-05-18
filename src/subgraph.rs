@@ -66,20 +66,20 @@ impl Subgraph {
 
         text.push("label=\"");
         text.push(self.label.as_str());
-        text.push("\";\n        ");
+        text.push("\";\n    ");
 
         if self.style != Style::None {
-            text.push("style=\"");
+            text.push("    style=\"");
             text.push(self.style.as_slice());
-            text.push("\";\n        ");
+            text.push("\";\n    ");
         }
 
         let colorstring: String;
         if let Some(c) = &self.color {
             colorstring = quote_string(c.to_string());
-            text.push("color=");
+            text.push("    color=");
             text.push(&colorstring);
-            text.push(";\n        ");
+            text.push(";\n    ");
         }
 
         let subgraph_node_names = self.nodes
@@ -89,6 +89,7 @@ impl Subgraph {
             .join("\n        ");
         // in case push extra change line
         if self.nodes.len() > 0 {
+            text.push("    ");
             text.push(&subgraph_node_names);
             text.push("\n    ");
         }

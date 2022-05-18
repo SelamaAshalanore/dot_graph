@@ -269,6 +269,24 @@ r#"digraph di {
     }
 
     #[test]
+    fn test_empty_subgraph() {
+        let mut graph = Graph::new("di", Kind::Digraph);
+        let c1 = Subgraph::new("cluster_0").label("process #1").style(Style::Filled).color(Some("lightgrey"));
+        graph.add_subgraph(c1);
+        
+
+        assert_eq!(graph.to_dot_string().unwrap(),
+r#"digraph di {
+    subgraph cluster_0 {
+        label="process #1";
+        style="filled";
+        color="lightgrey";
+    }
+}
+"#);
+    }
+
+    #[test]
     fn test_subgraph_with_edges() {
         let mut graph = Graph::new("di", Kind::Digraph);
         let mut c1 = Subgraph::new("cluster_0").label("");
