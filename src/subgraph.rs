@@ -1,6 +1,7 @@
 use crate::{
     node::Node,
-    style::Style
+    style::Style,
+    utils::quote_string
 };
 
 /// `Graph`'s subgraph
@@ -18,16 +19,12 @@ impl Subgraph {
         Subgraph { name: String::from(name), nodes: vec![], label: String::new(), style: Style::None, color: None}
     }
 
-    pub fn add_node(&self, node: Node) -> Self {
-        let mut subg = self.clone();
-        subg.nodes.push(node);
-        subg
+    pub fn add_node(&mut self, node: Node) -> () {
+        self.nodes.push(node);
     }
 
-    pub fn add_nodes(&self, nodes: Vec<Node>) -> Self {
-        let mut subg = self.clone();
-        subg.nodes.append(&mut nodes.clone());
-        subg
+    pub fn add_nodes(&mut self, nodes: Vec<Node>) -> () {
+        self.nodes.append(&mut nodes.clone());
     }
 
     pub fn label(&self, label: &str) -> Self {
@@ -57,6 +54,20 @@ impl Subgraph {
         text.push("label=\"");
         text.push(self.label.as_str());
         text.push("\";\n        ");
+
+        if self.style != Style::None {
+            text.push("style=\"");
+            text.push(self.style.as_slice());
+            text.push("\";\n        ");
+        }
+
+        let colorstring: String;
+        if let Some(c) = &self.color {
+            colorstring = quote_string(c.to_string());
+            text.push("color=");
+            text.push(&colorstring);
+            text.push(";\n        ");
+        }
 
         let subgraph_node_names = self.nodes
             .iter()

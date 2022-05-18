@@ -234,8 +234,14 @@ r#"graph g {
     #[test]
     fn test_subgraph() {
         let mut graph = Graph::new("di", Kind::Digraph);
-        graph.add_subgraph(Subgraph::new("cluster_0").label("").add_node(Node::new("N0")).add_node(Node::new("N1")));
-        graph.add_subgraph(Subgraph::new("cluster_1").label("").add_node(Node::new("N2")).add_node(Node::new("N3")));
+        let mut c1 = Subgraph::new("cluster_0").label("");
+        c1.add_node(Node::new("N0"));
+        c1.add_node(Node::new("N1"));
+        let mut c2 = Subgraph::new("cluster_1").label("");
+        c2.add_node(Node::new("N2"));
+        c2.add_node(Node::new("N3"));
+        graph.add_subgraph(c1);
+        graph.add_subgraph(c2);
         graph.add_edge(Edge::new("N0", "N1", ""));
         graph.add_edge(Edge::new("N0", "N2", ""));
         graph.add_edge(Edge::new("N1", "N3", ""));
@@ -258,6 +264,77 @@ r#"digraph di {
     N0 -> N2[label=""];
     N1 -> N3[label=""];
     N2 -> N3[label=""];
+}
+"#);
+    }
+
+    #[test]
+    fn test_subgraph_with_format() {
+        let mut graph = Graph::new("G", Kind::Digraph);
+        let mut c0 = Subgraph::new("cluster_0").label("process #1").style(Style::Filled).color(Some("lightgrey"));
+        c0.add_node(Node::new("a0").style(Style::Filled).color(Some("white")));
+        c0.add_node(Node::new("a1").style(Style::Filled).color(Some("white")));
+        c0.add_node(Node::new("a2").style(Style::Filled).color(Some("white")));
+        c0.add_node(Node::new("a3").style(Style::Filled).color(Some("white")));
+        let mut c1 = Subgraph::new("cluster_1")
+                                        .label("process #2")
+                                        .color(Some("blue"));
+        c1.add_node(Node::new("b0").style(Style::Filled));
+        c1.add_node(Node::new("b1").style(Style::Filled));
+        c1.add_node(Node::new("b2").style(Style::Filled));
+        c1.add_node(Node::new("b3").style(Style::Filled));
+        graph.add_subgraph(c0);
+        graph.add_subgraph(c1);
+        graph.add_node(Node::new("start").shape(Some("Mdiamond")));
+        graph.add_node(Node::new("end").shape(Some("Msquare")));
+        graph.add_edge(Edge::new("start", "a0", ""));
+        graph.add_edge(Edge::new("a0", "a1", ""));
+        graph.add_edge(Edge::new("a1", "a2", ""));
+        graph.add_edge(Edge::new("a2", "a3", ""));
+        graph.add_edge(Edge::new("start", "b0", ""));
+        graph.add_edge(Edge::new("b0", "b1", ""));
+        graph.add_edge(Edge::new("b1", "b2", ""));
+        graph.add_edge(Edge::new("b2", "b3", ""));
+        graph.add_edge(Edge::new("a1", "b3", ""));
+        graph.add_edge(Edge::new("b2", "a3", ""));
+        graph.add_edge(Edge::new("a3", "a0", ""));
+        graph.add_edge(Edge::new("a3", "end", ""));
+        graph.add_edge(Edge::new("b3", "end", ""));
+
+        assert_eq!(graph.to_dot_string().unwrap(),
+r#"digraph G {
+    subgraph cluster_0 {
+        label="process #1";
+        style="filled";
+        color="lightgrey";
+        a0[label="a0"][style="filled"][color="white"];
+        a1[label="a1"][style="filled"][color="white"];
+        a2[label="a2"][style="filled"][color="white"];
+        a3[label="a3"][style="filled"][color="white"];
+    }
+    subgraph cluster_1 {
+        label="process #2";
+        color="blue";
+        b0[label="b0"][style="filled"];
+        b1[label="b1"][style="filled"];
+        b2[label="b2"][style="filled"];
+        b3[label="b3"][style="filled"];
+    }
+    start[label="start"][shape="Mdiamond"];
+    end[label="end"][shape="Msquare"];
+    start -> a0[label=""];
+    a0 -> a1[label=""];
+    a1 -> a2[label=""];
+    a2 -> a3[label=""];
+    start -> b0[label=""];
+    b0 -> b1[label=""];
+    b1 -> b2[label=""];
+    b2 -> b3[label=""];
+    a1 -> b3[label=""];
+    b2 -> a3[label=""];
+    a3 -> a0[label=""];
+    a3 -> end[label=""];
+    b3 -> end[label=""];
 }
 "#);
     }
