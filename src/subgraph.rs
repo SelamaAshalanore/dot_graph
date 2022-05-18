@@ -1,7 +1,7 @@
 use crate::{
     node::Node,
     style::Style,
-    utils::quote_string
+    utils::quote_string, Edge
 };
 
 /// `Graph`'s subgraph
@@ -9,6 +9,7 @@ use crate::{
 pub struct Subgraph {
     pub name: String,
     nodes: Vec<Node>,
+    edges: Vec<Edge>,
     label: String,
     style: Style,
     color: Option<String>,
@@ -16,7 +17,7 @@ pub struct Subgraph {
 
 impl Subgraph {
     pub fn new(name: &str) -> Self {
-        Subgraph { name: String::from(name), nodes: vec![], label: String::new(), style: Style::None, color: None}
+        Subgraph { name: String::from(name), nodes: vec![], edges: vec![], label: String::new(), style: Style::None, color: None}
     }
 
     pub fn add_node(&mut self, node: Node) -> () {
@@ -25,6 +26,10 @@ impl Subgraph {
 
     pub fn add_nodes(&mut self, nodes: Vec<Node>) -> () {
         self.nodes.append(&mut nodes.clone());
+    }
+
+    pub fn add_edge(&mut self, edge: Edge) -> () {
+        self.edges.push(edge);
     }
 
     pub fn label(&self, label: &str) -> Self {
