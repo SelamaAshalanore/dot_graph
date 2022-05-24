@@ -106,19 +106,19 @@ impl Node {
 fn new_name(name: &str) -> String {
     let mut chars = name.chars();
     match chars.next() {
-        Some(c) if is_letter_or_underscore(c) => {}
-        _ => panic!("The name of the node should start with a letter or underscore"),
+        Some(c) if is_letter_or_underscore_or_dot(c) => {}
+        _ => panic!("The name of the node should start with a letter or underscore or dot"),
     }
     if !chars.all(is_constituent) {
-        panic!("The name of the node should only contain letter/number/underscore")
+        panic!("The name of the node should only contain letter/number/underscore/dot")
     }
         return String::from(name);
 
-    fn is_letter_or_underscore(c: char) -> bool {
-        in_range('a', c, 'z') || in_range('A', c, 'Z') || c == '_'
+    fn is_letter_or_underscore_or_dot(c: char) -> bool {
+        in_range('a', c, 'z') || in_range('A', c, 'Z') || c == '_' || c == '.'
     }
     fn is_constituent(c: char) -> bool {
-        is_letter_or_underscore(c) || in_range('0', c, '9')
+        is_letter_or_underscore_or_dot(c) || in_range('0', c, '9')
     }
     fn in_range(low: char, c: char, high: char) -> bool {
         low as usize <= c as usize && c as usize <= high as usize

@@ -29,6 +29,18 @@ r#"digraph single_node {
     }
 
     #[test]
+    fn dot_in_node_name() {
+        let mut graph = Graph::new("single_node", Kind::Digraph);
+        let node = Node::new("N.N0").label("N0");
+        graph.add_node(node);
+        assert_eq!(graph.to_dot_string().unwrap(),
+r#"digraph single_node {
+    "N.N0"[label="N0"];
+}
+"#);
+    }
+
+    #[test]
     fn single_node_with_style() {
         let mut graph = Graph::new("single_node", Kind::Digraph);
         let node = Node::new("N0").style(Style::Dashed);
