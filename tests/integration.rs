@@ -299,6 +299,12 @@ r#"digraph di {
     }
 
     #[test]
+    #[should_panic]
+    fn test_subgraph_name_wrong() {
+        Subgraph::new("c0").label("process #1").style(Style::Filled).color(Some("lightgrey"));
+    }
+
+    #[test]
     fn test_subgraph_with_edges() {
         let mut graph = Graph::new("di", Kind::Digraph);
         let mut c1 = Subgraph::new("cluster_0").label("");

@@ -19,7 +19,7 @@ pub struct Subgraph {
 
 impl Subgraph {
     pub fn new(name: &str) -> Self {
-        Subgraph { name: String::from(name), nodes: vec![], edges: vec![], label: String::new(), style: Style::None, color: None, edgeop: String::from(Kind::Digraph.edgeop())}
+        Subgraph { name: new_name(name), nodes: vec![], edges: vec![], label: String::new(), style: Style::None, color: None, edgeop: String::from(Kind::Digraph.edgeop())}
     }
 
     pub fn add_node(&mut self, node: Node) -> () {
@@ -113,5 +113,45 @@ impl Subgraph {
 
         
         return text.into_iter().collect();
+    }
+}
+
+/// Check if the subgraph's name is illegal.
+///
+/// The caller must ensure that the input conforms to an
+/// identifier format: it must be a non-empty string made up of
+/// alphanumeric or underscore characters, not beginning with a
+/// digit (i.e. the regular expression `[a-zA-Z_][a-zA-Z_0-9]*`).
+///
+/// (Note: this format is a strict subset of the `ID` format
+/// defined by the DOT language.  This function may change in the
+/// future to accept a broader subset, or the entirety, of DOT's
+/// `ID` format.)
+///
+/// Passing an invalid string (containing spaces, brackets,
+/// quotes, ...) will cause panic.
+fn new_name(name: &str) -> String {
+    let mut chars = name.chars();
+    match chars.next() {
+        Some(c) if is_letter_or_underscore(c) => {}
+        _ => panic!("The name of the node should start with a letter or underscore or dot"),
+    }
+    if !chars.all(is_constituent) {
+        panic!("The name of the node should only contain letter/number/underscore/dot")
+    }
+
+    if !name.starts_with("cluster_") {
+        panic!("The name of the subgraph should start with \"cluster_\"")
+    }
+        return String::from(name);
+
+    fn is_letter_or_underscore(c: char) -> bool {
+        in_range('a', c, 'z') || in_range('A', c, 'Z') || c == '_'
+    }
+    fn is_constituent(c: char) -> bool {
+        is_letter_or_underscore(c) || in_range('0', c, '9')
+    }
+    fn in_range(low: char, c: char, high: char) -> bool {
+        low as usize <= c as usize && c as usize <= high as usize
     }
 }
