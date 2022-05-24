@@ -57,7 +57,7 @@ impl Node {
         let escaped: String = quote_string(self.label.clone());
         let shape: String;
 
-        let mut text = vec![self.name.as_str()];
+        let mut text = vec!["\"", self.name.as_str(), "\""];
 
         text.push("[label=");
         text.push(escaped.as_str());
