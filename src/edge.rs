@@ -60,9 +60,9 @@ impl Edge {
         let start_arrow_s: String = self.start_arrow.to_dot_string();
         let end_arrow_s: String = self.end_arrow.to_dot_string();
 
-        let mut text = vec![self.from.as_str(), " ",
+        let mut text = vec!["\"", self.from.as_str(), "\" ",
                             edge_symbol, " ",
-                            self.to.as_str()];
+                            "\"", self.to.as_str(), "\"",];
 
         text.push("[label=");
         text.push(escaped_label.as_str());
