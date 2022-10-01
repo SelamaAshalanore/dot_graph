@@ -29,6 +29,19 @@ r#"digraph single_node {
     }
 
     #[test]
+    fn single_node_with_url() {
+        let mut graph = Graph::new("single_node", Kind::Digraph).url("https://example.com/".into());
+        let node = Node::new("N0").url("https://example.com/".into());
+        graph.add_node(node);
+        assert_eq!(graph.to_dot_string().unwrap(),
+r#"digraph single_node {
+    URL="https://example.com/"
+    "N0"[label="N0"][URL="https://example.com/"];
+}
+"#);
+    }
+
+    #[test]
     fn dot_in_node_name() {
         let mut graph = Graph::new("single_node", Kind::Digraph);
         let node = Node::new("N.N0").label("N0");
@@ -249,7 +262,7 @@ r#"graph g {
         let mut c1 = Subgraph::new("cluster_0").label("");
         c1.add_node(Node::new("N0"));
         c1.add_node(Node::new("N1"));
-        let mut c2 = Subgraph::new("cluster_1").label("");
+        let mut c2 = Subgraph::new("cluster_1").url("https://example.com/".into()).label("");
         c2.add_node(Node::new("N2"));
         c2.add_node(Node::new("N3"));
         graph.add_subgraph(c1);
@@ -268,6 +281,7 @@ r#"digraph di {
         "N1"[label="N1"];
     }
     subgraph cluster_1 {
+        URL="https://example.com/";
         label="";
         "N2"[label="N2"];
         "N3"[label="N3"];
@@ -419,5 +433,53 @@ r#"digraph G {
         graph.add_node(Node::new("Weird { struct : ure } !!!"));
         let result = graph.to_dot_string();
         result.unwrap();
+    }
+
+    #[test]
+    fn single_edge_with_url() {
+        let mut graph = Graph::new("single_edge", Kind::Digraph);
+        graph.add_node(Node::new("N0"));
+        graph.add_node(Node::new("N1"));
+        graph.add_edge(Edge::new("N0", "N1", "E").url("https://example.com/".into()));
+        assert_eq!(graph.to_dot_string().unwrap(),
+r#"digraph single_edge {
+    "N0"[label="N0"];
+    "N1"[label="N1"];
+    "N0" -> "N1"[label="E"][URL="https://example.com/"];
+}
+"#);
+    }
+
+    #[test]
+    fn single_edge_with_label_url() {
+        let mut graph = Graph::new("single_edge", Kind::Digraph);
+        graph.add_node(Node::new("N0"));
+        graph.add_node(Node::new("N1"));
+        graph.add_edge(Edge::new("N0", "N1", "E").label_url("https://example.com/".into()));
+        assert_eq!(graph.to_dot_string().unwrap(),
+r#"digraph single_edge {
+    "N0"[label="N0"];
+    "N1"[label="N1"];
+    "N0" -> "N1"[label="E"][labelURL="https://example.com/"];
+}
+"#);
+    }
+
+    #[test]
+    fn single_edge_with_label_url_and_url() {
+        let mut graph = Graph::new("single_edge", Kind::Digraph);
+        graph.add_node(Node::new("N0"));
+        graph.add_node(Node::new("N1"));
+        graph.add_edge(Edge::new("N0", "N1", "E")
+            .url("https://example.com/".into())
+            .label_url("https://example.com/".into())
+        );
+        assert_eq!(graph.to_dot_string().unwrap(),
+r#"digraph single_edge {
+    "N0"[label="N0"];
+    "N1"[label="N1"];
+    "N0" -> "N1"[label="E"][labelURL="https://example.com/"][URL="https://example.com/"];
+}
+"#);
     }
 }
