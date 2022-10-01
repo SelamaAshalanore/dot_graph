@@ -31,12 +31,12 @@ r#"digraph single_node {
     #[test]
     fn single_node_with_url() {
         let mut graph = Graph::new("single_node", Kind::Digraph).url("https://example.com/".into());
-        let node = Node::new("N0");
+        let node = Node::new("N0").url("https://example.com/".into());
         graph.add_node(node);
         assert_eq!(graph.to_dot_string().unwrap(),
 r#"digraph single_node {
     URL="https://example.com/"
-    "N0"[label="N0"];
+    "N0"[label="N0"][URL="https://example.com/"];
 }
 "#);
     }
