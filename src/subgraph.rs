@@ -15,11 +15,12 @@ pub struct Subgraph {
     style: Style,
     color: Option<String>,
     edgeop: String,
+    url: String
 }
 
 impl Subgraph {
     pub fn new(name: &str) -> Self {
-        Subgraph { name: new_name(name), nodes: vec![], edges: vec![], label: String::new(), style: Style::None, color: None, edgeop: String::from(Kind::Digraph.edgeop())}
+        Subgraph { name: new_name(name), nodes: vec![], edges: vec![], label: String::new(), style: Style::None, color: None, edgeop: String::from(Kind::Digraph.edgeop()), url: Default::default() }
     }
 
     pub fn add_node(&mut self, node: Node) -> () {
@@ -61,8 +62,22 @@ impl Subgraph {
         subg
     }
 
+    pub fn url(&mut self, url: String) -> Self {
+        let mut edge = self.clone();
+        edge.url = url;
+        edge
+    }
+
     pub fn to_dot_string(&self) -> String {
         let mut text = vec!["subgraph ", self.name.as_str(), " {\n        "];
+
+        let escaped_url: String;
+        if !self.url.is_empty(){
+            escaped_url = quote_string(self.url.clone());
+            text.push("URL=");
+            text.push(escaped_url.as_str());
+            text.push(";\n        ");
+        }
 
         text.push("label=\"");
         text.push(self.label.as_str());
