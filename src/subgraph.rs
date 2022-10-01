@@ -63,9 +63,9 @@ impl Subgraph {
     }
 
     pub fn url(&mut self, url: String) -> Self {
-        let mut edge = self.clone();
-        edge.url = url;
-        edge
+        let mut sub_graph = self.clone();
+        sub_graph.url = url;
+        sub_graph
     }
 
     pub fn to_dot_string(&self) -> String {

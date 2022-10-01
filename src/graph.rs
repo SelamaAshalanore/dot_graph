@@ -34,9 +34,9 @@ impl Graph {
     }
 
     pub fn url(&mut self, url: String) -> Self {
-        let mut edge = self.clone();
-        edge.url = url;
-        edge
+        let mut graph = self.clone();
+        graph.url = url;
+        graph
     }
 
     pub fn to_dot_string(&self) -> io::Result<String> {
