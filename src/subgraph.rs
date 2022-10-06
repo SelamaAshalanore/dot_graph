@@ -39,37 +39,32 @@ impl Subgraph {
         self.edges.push(edge);
     }
 
-    pub fn label(&self, label: &str) -> Self {
-        let mut subg = self.clone();
-        subg.label = String::from(label);
-        subg
+    pub fn label(mut self, label: &str) -> Self {
+        self.label = String::from(label);
+        self
     }
 
-    pub fn style(&self, style: Style) -> Self {
-        let mut subg = self.clone();
-        subg.style = style;
-        subg
+    pub fn style(mut self, style: Style) -> Self {
+        self.style = style;
+        self
     }
 
-    pub fn color(&self, color: Option<&str>) -> Self {
-        let mut subg = self.clone();
-        subg.color = match color {
+    pub fn color(mut self, color: Option<&str>) -> Self {
+        self.color = match color {
             Some(c) => Some(String::from(c)),
             None => None,
         };
-        subg
+        self
     }
 
-    pub fn edgeop(&self, edgeop: &str) -> Self {
-        let mut subg = self.clone();
-        subg.edgeop = String::from(edgeop);
-        subg
+    pub fn edgeop(mut self, edgeop: &str) -> Self {
+        self.edgeop = String::from(edgeop);
+        self
     }
 
-    pub fn url(&mut self, url: String) -> Self {
-        let mut sub_graph = self.clone();
-        sub_graph.url = url;
-        sub_graph
+    pub fn url(mut self, url: String) -> Self {
+        self.url = url;
+        self
     }
 
     pub fn to_dot_string(&self) -> String {

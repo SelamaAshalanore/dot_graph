@@ -25,40 +25,35 @@ impl Node {
         }
     }
 
-    pub fn label(&self, label: &str) -> Self {
-        let mut node = self.clone();
-        node.label = String::from(label);
-        node
+    pub fn label(mut self, label: &str) -> Self {
+        self.label = String::from(label);
+        self
     }
 
-    pub fn style(&self, style: Style) -> Self {
-        let mut node = self.clone();
-        node.style = style;
-        node
+    pub fn style(mut self, style: Style) -> Self {
+        self.style = style;
+        self
     }
 
-    pub fn shape(&self, shape: Option<&str>) -> Self {
-        let mut node = self.clone();
+    pub fn shape(mut self, shape: Option<&str>) -> Self {
         match shape {
-            Some(s) => node.shape = Some(String::from(s)),
-            None => node.shape = None,
+            Some(s) => self.shape = Some(String::from(s)),
+            None => self.shape = None,
         }
-        node
+        self
     }
 
-    pub fn color(&self, color: Option<&str>) -> Self {
-        let mut node = self.clone();
-        node.color = match color {
+    pub fn color(mut self, color: Option<&str>) -> Self {
+        self.color = match color {
             Some(c) => Some(String::from(c)),
             None => None,
         };
-        node
+        self
     }
 
-    pub fn url(&mut self, url: String) -> Self {
-        let mut node = self.clone();
-        node.url = url;
-        node
+    pub fn url(mut self, url: String) -> Self {
+        self.url = url;
+        self
     }
 
     pub fn to_dot_string(&self) -> String {

@@ -29,49 +29,42 @@ impl Edge {
         }
     }
 
-    pub fn label(&mut self, label: &str) -> Self {
-        let mut edge = self.clone();
-        edge.label = String::from(label);
-        edge
+    pub fn label(mut self, label: &str) -> Self {
+        self.label = String::from(label);
+        self
     }
 
-    pub fn style(&mut self, style: Style) -> Self {
-        let mut edge = self.clone();
-        edge.style = style;
-        edge
+    pub fn style(mut self, style: Style) -> Self {
+        self.style = style;
+        self
     }
 
-    pub fn color(&mut self, color: Option<&str>) -> Self {
-        let mut edge = self.clone();
-        edge.color = match color {
+    pub fn color(mut self, color: Option<&str>) -> Self {
+        self.color = match color {
             Some(c) => Some(String::from(c)),
             None => None,
         };
-        edge
+        self
     }
 
-    pub fn start_arrow(&mut self, arrow: Arrow) -> Self {
-        let mut edge = self.clone();
-        edge.start_arrow = arrow;
-        edge
+    pub fn start_arrow(mut self, arrow: Arrow) -> Self {
+        self.start_arrow = arrow;
+        self
     }
 
-    pub fn end_arrow(&mut self, arrow: Arrow) -> Self {
-        let mut edge = self.clone();
-        edge.end_arrow = arrow;
-        edge
+    pub fn end_arrow(mut self, arrow: Arrow) -> Self {
+        self.end_arrow = arrow;
+        self
     }
 
-    pub fn label_url(&mut self, url: String) -> Self {
-        let mut edge = self.clone();
-        edge.label_url = url;
-        edge
+    pub fn label_url(mut self, url: String) -> Self {
+        self.label_url = url;
+        self
     }
 
-    pub fn url(&mut self, url: String) -> Self {
-        let mut edge = self.clone();
-        edge.url = url;
-        edge
+    pub fn url(mut self, url: String) -> Self {
+        self.url = url;
+        self
     }
 
     pub fn to_dot_string(&self, edge_symbol: &str) -> String {
