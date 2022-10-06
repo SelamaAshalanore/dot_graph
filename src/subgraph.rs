@@ -1,9 +1,4 @@
-use crate::{
-    node::Node,
-    style::Style,
-    utils::quote_string, Edge,
-    Kind
-};
+use crate::{node::Node, style::Style, utils::quote_string, Edge, Kind};
 
 /// `Graph`'s subgraph
 #[derive(Clone)]
@@ -15,11 +10,21 @@ pub struct Subgraph {
     style: Style,
     color: Option<String>,
     edgeop: String,
+    url: String,
 }
 
 impl Subgraph {
     pub fn new(name: &str) -> Self {
-        Subgraph { name: new_name(name), nodes: vec![], edges: vec![], label: String::new(), style: Style::None, color: None, edgeop: String::from(Kind::Digraph.edgeop())}
+        Subgraph {
+            name: new_name(name),
+            nodes: vec![],
+            edges: vec![],
+            label: String::new(),
+            style: Style::None,
+            color: None,
+            edgeop: String::from(Kind::Digraph.edgeop()),
+            url: Default::default(),
+        }
     }
 
     pub fn add_node(&mut self, node: Node) -> () {
@@ -34,35 +39,44 @@ impl Subgraph {
         self.edges.push(edge);
     }
 
-    pub fn label(&self, label: &str) -> Self {
-        let mut subg = self.clone();
-        subg.label = String::from(label);
-        subg
+    pub fn label(mut self, label: &str) -> Self {
+        self.label = String::from(label);
+        self
     }
 
-    pub fn style(&self, style: Style) -> Self {
-        let mut subg = self.clone();
-        subg.style = style;
-        subg
+    pub fn style(mut self, style: Style) -> Self {
+        self.style = style;
+        self
     }
 
-    pub fn color(&self, color: Option<&str>) -> Self {
-        let mut subg = self.clone();
-        subg.color = match color {
+    pub fn color(mut self, color: Option<&str>) -> Self {
+        self.color = match color {
             Some(c) => Some(String::from(c)),
-            None => None
+            None => None,
         };
-        subg
+        self
     }
 
-    pub fn edgeop(&self, edgeop: &str) -> Self {
-        let mut subg = self.clone();
-        subg.edgeop = String::from(edgeop);
-        subg
+    pub fn edgeop(mut self, edgeop: &str) -> Self {
+        self.edgeop = String::from(edgeop);
+        self
+    }
+
+    pub fn url(mut self, url: String) -> Self {
+        self.url = url;
+        self
     }
 
     pub fn to_dot_string(&self) -> String {
         let mut text = vec!["subgraph ", self.name.as_str(), " {\n        "];
+
+        let escaped_url: String;
+        if !self.url.is_empty() {
+            escaped_url = quote_string(self.url.clone());
+            text.push("URL=");
+            text.push(escaped_url.as_str());
+            text.push(";\n        ");
+        }
 
         text.push("label=\"");
         text.push(self.label.as_str());
@@ -82,7 +96,8 @@ impl Subgraph {
             text.push(";\n    ");
         }
 
-        let subgraph_node_names = self.nodes
+        let subgraph_node_names = self
+            .nodes
             .iter()
             .map(|n| n.to_dot_string())
             .collect::<Vec<String>>()
@@ -93,10 +108,10 @@ impl Subgraph {
             text.push(&subgraph_node_names);
             text.push("\n    ");
         }
-        
 
         let edge_symbol = &self.edgeop;
-        let subgraph_edge_strs = self.edges
+        let subgraph_edge_strs = self
+            .edges
             .iter()
             .map(|e| e.to_dot_string(&edge_symbol))
             .collect::<Vec<String>>()
@@ -109,9 +124,7 @@ impl Subgraph {
         }
 
         text.push("}");
-        
 
-        
         return text.into_iter().collect();
     }
 }
@@ -143,7 +156,7 @@ fn new_name(name: &str) -> String {
     if !name.starts_with("cluster_") {
         panic!("The name of the subgraph should start with \"cluster_\"")
     }
-        return String::from(name);
+    return String::from(name);
 
     fn is_letter_or_underscore(c: char) -> bool {
         in_range('a', c, 'z') || in_range('A', c, 'Z') || c == '_'

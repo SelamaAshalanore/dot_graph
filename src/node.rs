@@ -1,10 +1,6 @@
 /// each node is an index in a vector in the graph.
 // pub type Node = usize;
-
-use crate::{
-    style::Style,
-    utils::{quote_string},
-};
+use crate::{style::Style, utils::quote_string};
 
 /// `Graph`'s node
 #[derive(Clone)]
@@ -13,55 +9,71 @@ pub struct Node {
     label: String,
     style: Style,
     color: Option<String>,
-    shape: Option<String>
+    shape: Option<String>,
+    url: String,
 }
 
 impl Node {
     pub fn new(name: &str) -> Self {
-        Node { name: new_name(name), label: String::from(name), style: Style::None, color: None, shape: None }
-    }
-
-    pub fn label(&self, label: &str) -> Self {
-        let mut node = self.clone();
-        node.label = String::from(label);
-        node
-    }
-
-    pub fn style(&self, style: Style) -> Self {
-        let mut node = self.clone();
-        node.style = style;
-        node
-    }
-
-    pub fn shape(&self, shape: Option<&str>) -> Self {
-        let mut node = self.clone();
-        match shape {
-            Some(s) => node.shape = Some(String::from(s)),
-            None => node.shape = None
+        Node {
+            name: new_name(name),
+            label: String::from(name),
+            style: Style::None,
+            color: None,
+            shape: None,
+            url: Default::default(),
         }
-        node
     }
 
-    pub fn color(&self, color: Option<&str>) -> Self {
-        let mut node = self.clone();
-        node.color = match color {
+    pub fn label(mut self, label: &str) -> Self {
+        self.label = String::from(label);
+        self
+    }
+
+    pub fn style(mut self, style: Style) -> Self {
+        self.style = style;
+        self
+    }
+
+    pub fn shape(mut self, shape: Option<&str>) -> Self {
+        match shape {
+            Some(s) => self.shape = Some(String::from(s)),
+            None => self.shape = None,
+        }
+        self
+    }
+
+    pub fn color(mut self, color: Option<&str>) -> Self {
+        self.color = match color {
             Some(c) => Some(String::from(c)),
-            None => None
+            None => None,
         };
-        node
+        self
+    }
+
+    pub fn url(mut self, url: String) -> Self {
+        self.url = url;
+        self
     }
 
     pub fn to_dot_string(&self) -> String {
         let colorstring: String;
 
-        let escaped: String = quote_string(self.label.clone());
+        let escaped_label: String = quote_string(self.label.clone());
+        let escaped_url: String = quote_string(self.url.clone());
         let shape: String;
 
         let mut text = vec!["\"", self.name.as_str(), "\""];
 
         text.push("[label=");
-        text.push(escaped.as_str());
+        text.push(escaped_label.as_str());
         text.push("]");
+
+        if !self.url.is_empty() {
+            text.push("[URL=");
+            text.push(escaped_url.as_str());
+            text.push("]");
+        }
 
         if self.style != Style::None {
             text.push("[style=\"");
@@ -86,7 +98,6 @@ impl Node {
         text.push(";");
         return text.into_iter().collect();
     }
-
 }
 
 /// Check if the node's name is illegal.
@@ -112,7 +123,7 @@ fn new_name(name: &str) -> String {
     if !chars.all(is_constituent) {
         panic!("The name of the node should only contain letter/number/underscore/dot")
     }
-        return String::from(name);
+    return String::from(name);
 
     fn is_letter_or_underscore_or_dot(c: char) -> bool {
         in_range('a', c, 'z') || in_range('A', c, 'Z') || c == '_' || c == '.'

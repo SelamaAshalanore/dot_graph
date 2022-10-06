@@ -1,22 +1,28 @@
-use crate::{
-    node::{Node},
-    edge::{Edge}, subgraph::Subgraph,
-};
-use std::io::prelude::*;
+use crate::{edge::Edge, node::Node, subgraph::Subgraph, utils::quote_string};
 use std::io;
+use std::io::prelude::*;
 
 /// Entry point of this library, use `to_dot_string` to get the string output.
+#[derive(Clone)]
 pub struct Graph {
     name: String,
     kind: Kind,
+    url: String,
     nodes: Vec<Node>,
     edges: Vec<Edge>,
-    subgraph: Vec<Subgraph>
+    subgraph: Vec<Subgraph>,
 }
 
 impl Graph {
     pub fn new(name: &str, kind: Kind) -> Graph {
-        Graph { name: String::from(name), kind: kind, nodes: vec![], edges: vec![], subgraph: vec![] }
+        Graph {
+            name: String::from(name),
+            kind: kind,
+            nodes: vec![],
+            edges: vec![],
+            subgraph: vec![],
+            url: Default::default(),
+        }
     }
 
     pub fn add_node(&mut self, node: Node) -> () {
@@ -31,6 +37,12 @@ impl Graph {
         self.subgraph.push(subgraph.edgeop(self.kind.edgeop()))
     }
 
+    pub fn url(&mut self, url: String) -> Self {
+        let mut graph = self.clone();
+        graph.url = url;
+        graph
+    }
+
     pub fn to_dot_string(&self) -> io::Result<String> {
         let mut writer = Vec::new();
         self.render_opts(&mut writer).unwrap();
@@ -41,11 +53,7 @@ impl Graph {
 
     /// Renders graph `g` into the writer `w` in DOT syntax.
     /// (Main entry point for the library.)
-    fn render_opts<'a,
-                    W: Write>
-        (&self,
-        w: &mut W)
-        -> io::Result<()> {
+    fn render_opts<'a, W: Write>(&self, w: &mut W) -> io::Result<()> {
         fn writeln<W: Write>(w: &mut W, arg: &[&str]) -> io::Result<()> {
             for &s in arg {
                 w.write_all(s.as_bytes())?;
@@ -58,6 +66,12 @@ impl Graph {
         }
 
         writeln(w, &[self.kind.keyword(), " ", self.name.as_str(), " {"])?;
+
+        if !self.url.is_empty() {
+            indent(w)?;
+            writeln(w, &["URL=", quote_string(self.url.clone()).as_str()])?;
+        }
+
         for n in self.subgraph.iter() {
             indent(w)?;
             let mut text: Vec<&str> = vec![];
@@ -101,7 +115,7 @@ impl Kind {
     pub fn keyword(&self) -> &'static str {
         match *self {
             Kind::Digraph => "digraph",
-            Kind::Graph => "graph"
+            Kind::Graph => "graph",
         }
     }
 
