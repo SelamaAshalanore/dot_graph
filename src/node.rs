@@ -1,6 +1,10 @@
 /// each node is an index in a vector in the graph.
 // pub type Node = usize;
-use crate::{style::Style, utils::quote_string};
+
+use crate::{
+    style::Style,
+    utils::{quote_string},
+};
 
 /// `Graph`'s node
 #[derive(Clone)]
@@ -10,19 +14,12 @@ pub struct Node {
     style: Style,
     color: Option<String>,
     shape: Option<String>,
-    url: String,
+    url: String
 }
 
 impl Node {
     pub fn new(name: &str) -> Self {
-        Node {
-            name: new_name(name),
-            label: String::from(name),
-            style: Style::None,
-            color: None,
-            shape: None,
-            url: Default::default(),
-        }
+        Node { name: new_name(name), label: String::from(name), style: Style::None, color: None, shape: None, url: Default::default() }
     }
 
     pub fn label(&self, label: &str) -> Self {
@@ -41,7 +38,7 @@ impl Node {
         let mut node = self.clone();
         match shape {
             Some(s) => node.shape = Some(String::from(s)),
-            None => node.shape = None,
+            None => node.shape = None
         }
         node
     }
@@ -50,7 +47,7 @@ impl Node {
         let mut node = self.clone();
         node.color = match color {
             Some(c) => Some(String::from(c)),
-            None => None,
+            None => None
         };
         node
     }
@@ -103,6 +100,7 @@ impl Node {
         text.push(";");
         return text.into_iter().collect();
     }
+
 }
 
 /// Check if the node's name is illegal.
@@ -128,7 +126,7 @@ fn new_name(name: &str) -> String {
     if !chars.all(is_constituent) {
         panic!("The name of the node should only contain letter/number/underscore/dot")
     }
-    return String::from(name);
+        return String::from(name);
 
     fn is_letter_or_underscore_or_dot(c: char) -> bool {
         in_range('a', c, 'z') || in_range('A', c, 'Z') || c == '_' || c == '.'

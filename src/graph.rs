@@ -1,6 +1,9 @@
-use crate::{edge::Edge, node::Node, subgraph::Subgraph, utils::quote_string};
-use std::io;
+use crate::{
+    node::{Node},
+    edge::{Edge}, subgraph::Subgraph, utils::quote_string,
+};
 use std::io::prelude::*;
+use std::io;
 
 /// Entry point of this library, use `to_dot_string` to get the string output.
 #[derive(Clone)]
@@ -10,19 +13,12 @@ pub struct Graph {
     url: String,
     nodes: Vec<Node>,
     edges: Vec<Edge>,
-    subgraph: Vec<Subgraph>,
+    subgraph: Vec<Subgraph>
 }
 
 impl Graph {
     pub fn new(name: &str, kind: Kind) -> Graph {
-        Graph {
-            name: String::from(name),
-            kind: kind,
-            nodes: vec![],
-            edges: vec![],
-            subgraph: vec![],
-            url: Default::default(),
-        }
+        Graph { name: String::from(name), kind: kind, nodes: vec![], edges: vec![], subgraph: vec![], url: Default::default() }
     }
 
     pub fn add_node(&mut self, node: Node) -> () {
@@ -53,7 +49,7 @@ impl Graph {
 
     /// Renders graph `g` into the writer `w` in DOT syntax.
     /// (Main entry point for the library.)
-    fn render_opts<'a, W: Write>(&self, w: &mut W) -> io::Result<()> {
+    fn render_opts<'a,W: Write>(&self, w: &mut W) -> io::Result<()> {
         fn writeln<W: Write>(w: &mut W, arg: &[&str]) -> io::Result<()> {
             for &s in arg {
                 w.write_all(s.as_bytes())?;
@@ -67,7 +63,7 @@ impl Graph {
 
         writeln(w, &[self.kind.keyword(), " ", self.name.as_str(), " {"])?;
 
-        if !self.url.is_empty() {
+        if !self.url.is_empty(){
             indent(w)?;
             writeln(w, &["URL=", quote_string(self.url.clone()).as_str()])?;
         }
@@ -115,7 +111,7 @@ impl Kind {
     pub fn keyword(&self) -> &'static str {
         match *self {
             Kind::Digraph => "digraph",
-            Kind::Graph => "graph",
+            Kind::Graph => "graph"
         }
     }
 

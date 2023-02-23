@@ -1,3 +1,4 @@
+
 /// This structure holds all information that can describe an arrow connected to
 /// either start or end of an edge.
 #[derive(Clone, Hash, PartialEq, Eq)]
@@ -15,7 +16,9 @@ impl Arrow {
 
     /// Arrow constructor which returns a default arrow
     pub fn default() -> Arrow {
-        Arrow { arrows: vec![] }
+        Arrow {
+            arrows: vec![],
+        }
     }
 
     /// Arrow constructor which returns an empty arrow
@@ -28,7 +31,7 @@ impl Arrow {
     /// Arrow constructor which returns a regular triangle arrow, without modifiers
     pub fn normal() -> Arrow {
         Arrow {
-            arrows: vec![ArrowShape::normal()],
+            arrows: vec![ArrowShape::normal()]
         }
     }
 
@@ -44,10 +47,11 @@ impl Arrow {
         let mut cow = String::new();
         for arrow in &self.arrows {
             cow.push_str(&arrow.to_dot_string());
-        }
+        };
         cow
     }
 }
+
 
 impl Into<Arrow> for [ArrowShape; 2] {
     fn into(self) -> Arrow {
@@ -99,12 +103,13 @@ pub enum Side {
 impl Side {
     pub fn as_slice(self) -> &'static str {
         match self {
-            Side::Left => "l",
+            Side::Left  => "l",
             Side::Right => "r",
-            Side::Both => "",
+            Side::Both  => "",
         }
     }
 }
+
 
 /// This enumeration represents all possible arrow edge
 /// as defined in [grapviz documentation](http://www.graphviz.org/content/arrow-shapes).
@@ -194,36 +199,36 @@ impl ArrowShape {
     pub fn to_dot_string(&self) -> String {
         let mut res = String::new();
         match *self {
-            Box(fill, side)
-            | ICurve(fill, side)
-            | Diamond(fill, side)
-            | Inv(fill, side)
-            | Normal(fill, side) => {
+            Box(fill, side) | ICurve(fill, side)| Diamond(fill, side) |
+            Inv(fill, side) | Normal(fill, side)=> {
                 res.push_str(fill.as_slice());
                 match side {
                     Side::Left | Side::Right => res.push_str(side.as_slice()),
-                    Side::Both => {}
+                    Side::Both => {},
                 };
-            }
-            Dot(fill) => res.push_str(fill.as_slice()),
-            Crow(side) | Curve(side) | Tee(side) | Vee(side) => match side {
-                Side::Left | Side::Right => res.push_str(side.as_slice()),
-                Side::Both => {}
             },
-            NoArrow => {}
+            Dot(fill)       => res.push_str(fill.as_slice()),
+            Crow(side) | Curve(side) | Tee(side)
+            | Vee(side) => {
+                match side {
+                    Side::Left | Side::Right => res.push_str(side.as_slice()),
+                    Side::Both => {},
+                }
+            }
+            NoArrow => {},
         };
         match *self {
-            NoArrow => res.push_str("none"),
-            Normal(_, _) => res.push_str("normal"),
-            Box(_, _) => res.push_str("box"),
-            Crow(_) => res.push_str("crow"),
-            Curve(_) => res.push_str("curve"),
-            ICurve(_, _) => res.push_str("icurve"),
-            Diamond(_, _) => res.push_str("diamond"),
-            Dot(_) => res.push_str("dot"),
-            Inv(_, _) => res.push_str("inv"),
-            Tee(_) => res.push_str("tee"),
-            Vee(_) => res.push_str("vee"),
+            NoArrow         => res.push_str("none"),
+            Normal(_, _)    => res.push_str("normal"),
+            Box(_, _)       => res.push_str("box"),
+            Crow(_)         => res.push_str("crow"),
+            Curve(_)        => res.push_str("curve"),
+            ICurve(_, _)    => res.push_str("icurve"),
+            Diamond(_, _)   => res.push_str("diamond"),
+            Dot(_)          => res.push_str("dot"),
+            Inv(_, _)       => res.push_str("inv"),
+            Tee(_)          => res.push_str("tee"),
+            Vee(_)          => res.push_str("vee"),
         };
         res
     }

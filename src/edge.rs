@@ -1,4 +1,8 @@
-use crate::{arrow::Arrow, style::Style, utils::quote_string};
+use crate::{
+    arrow::{Arrow},
+    style::{Style},
+    utils::{quote_string},
+};
 
 /// `Graph`'s edge.
 #[derive(Clone)]
@@ -16,16 +20,12 @@ pub struct Edge {
 
 impl Edge {
     pub fn new(from: &str, to: &str, label: &str) -> Self {
-        Edge {
-            from: String::from(from),
-            to: String::from(to),
-            label: String::from(label),
-            label_url: Default::default(),
-            color: None,
-            style: Style::None,
-            start_arrow: Arrow::default(),
-            end_arrow: Arrow::default(),
-            url: Default::default(),
+        Edge { 
+            from: String::from(from), to: String::from(to), 
+            label: String::from(label), label_url: Default::default(),
+            color: None, style: Style::None, 
+            start_arrow: Arrow::default(), end_arrow: Arrow::default(),
+            url: Default::default() 
         }
     }
 
@@ -45,7 +45,7 @@ impl Edge {
         let mut edge = self.clone();
         edge.color = match color {
             Some(c) => Some(String::from(c)),
-            None => None,
+            None => None
         };
         edge
     }
@@ -81,33 +81,26 @@ impl Edge {
         let end_arrow_s: String = self.end_arrow.to_dot_string();
         let escaped_label_url: &String = &quote_string(self.label_url.clone());
         let escaped_url: &String = &quote_string(self.url.clone());
-
-        let mut text = vec![
-            "\"",
-            self.from.as_str(),
-            "\" ",
-            edge_symbol,
-            " ",
-            "\"",
-            self.to.as_str(),
-            "\"",
-        ];
-
+        
+        let mut text = vec!["\"", self.from.as_str(), "\" ",
+        edge_symbol, " ",
+        "\"", self.to.as_str(), "\"",];
+        
         text.push("[label=");
         text.push(escaped_label.as_str());
         text.push("]");
-
-        if !self.label_url.is_empty() {
-            text.push("[labelURL=");
-            text.push(escaped_label_url.as_str());
-            text.push("]");
-        }
-
-        if !self.url.is_empty() {
-            text.push("[URL=");
-            text.push(escaped_url.as_str());
-            text.push("]");
-        }
+        
+    if !self.label_url.is_empty(){
+        text.push("[labelURL=");
+        text.push(escaped_label_url.as_str());
+        text.push("]");
+    }
+    
+    if !self.url.is_empty(){
+        text.push("[URL=");
+        text.push(escaped_url.as_str());
+        text.push("]");
+    }
 
         if self.style != Style::None {
             text.push("[style=\"");
@@ -116,7 +109,9 @@ impl Edge {
         }
 
         let color: Option<String> = match &self.color {
-            Some(l) => Some((*l).clone()),
+            Some(l) => {
+                Some((*l).clone())
+            },
             None => None,
         };
         if let Some(c) = color {
@@ -130,18 +125,10 @@ impl Edge {
         let mut arrow_str: String = String::new();
         if !self.start_arrow.is_default() || !self.end_arrow.is_default() {
             if !self.end_arrow.is_default() {
-                arrow_text.push(
-                    vec!["arrowhead=\"", &end_arrow_s, "\""]
-                        .into_iter()
-                        .collect(),
-                );
+                arrow_text.push(vec!["arrowhead=\"", &end_arrow_s, "\""].into_iter().collect());
             }
             if !self.start_arrow.is_default() {
-                arrow_text.push(
-                    vec!["arrowtail=\"", &start_arrow_s, "\""]
-                        .into_iter()
-                        .collect(),
-                );
+                arrow_text.push(vec!["arrowtail=\"", &start_arrow_s, "\""].into_iter().collect());
             }
             if !self.start_arrow.is_default() && !self.end_arrow.is_default() {
                 arrow_text.push(String::from("dir=\"both\""));
