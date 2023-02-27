@@ -13,12 +13,13 @@ pub struct Node {
     label: String,
     style: Style,
     color: Option<String>,
-    shape: Option<String>
+    shape: Option<String>,
+    url: String
 }
 
 impl Node {
     pub fn new(name: &str) -> Self {
-        Node { name: new_name(name), label: String::from(name), style: Style::None, color: None, shape: None }
+        Node { name: new_name(name), label: String::from(name), style: Style::None, color: None, shape: None, url: Default::default() }
     }
 
     pub fn label(&self, label: &str) -> Self {
@@ -51,17 +52,30 @@ impl Node {
         node
     }
 
+    pub fn url(&mut self, url: String) -> Self {
+        let mut node = self.clone();
+        node.url = url;
+        node
+    }
+
     pub fn to_dot_string(&self) -> String {
         let colorstring: String;
 
-        let escaped: String = quote_string(self.label.clone());
+        let escaped_label: String = quote_string(self.label.clone());
+        let escaped_url: String = quote_string(self.url.clone());
         let shape: String;
 
         let mut text = vec!["\"", self.name.as_str(), "\""];
 
         text.push("[label=");
-        text.push(escaped.as_str());
+        text.push(escaped_label.as_str());
         text.push("]");
+
+        if !self.url.is_empty() {
+            text.push("[URL=");
+            text.push(escaped_url.as_str());
+            text.push("]");
+        }
 
         if self.style != Style::None {
             text.push("[style=\"");

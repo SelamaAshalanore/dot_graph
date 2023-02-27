@@ -10,6 +10,8 @@ pub struct Edge {
     from: String,
     to: String,
     label: String,
+    label_url: String,
+    url: String,
     style: Style,
     start_arrow: Arrow,
     end_arrow: Arrow,
@@ -18,7 +20,13 @@ pub struct Edge {
 
 impl Edge {
     pub fn new(from: &str, to: &str, label: &str) -> Self {
-        Edge { from: String::from(from), to: String::from(to), label: String::from(label), style: Style::None, start_arrow: Arrow::default(), end_arrow: Arrow::default(), color: None }
+        Edge { 
+            from: String::from(from), to: String::from(to), 
+            label: String::from(label), label_url: Default::default(),
+            color: None, style: Style::None, 
+            start_arrow: Arrow::default(), end_arrow: Arrow::default(),
+            url: Default::default() 
+        }
     }
 
     pub fn label(&mut self, label: &str) -> Self {
@@ -54,19 +62,45 @@ impl Edge {
         edge
     }
 
+    pub fn label_url(&mut self, url: String) -> Self {
+        let mut edge = self.clone();
+        edge.label_url = url;
+        edge
+    }
+
+    pub fn url(&mut self, url: String) -> Self {
+        let mut edge = self.clone();
+        edge.url = url;
+        edge
+    }
+
     pub fn to_dot_string(&self, edge_symbol: &str) -> String {
         let colorstring: String;
         let escaped_label: &String = &quote_string(self.label.clone());
         let start_arrow_s: String = self.start_arrow.to_dot_string();
         let end_arrow_s: String = self.end_arrow.to_dot_string();
-
+        let escaped_label_url: &String = &quote_string(self.label_url.clone());
+        let escaped_url: &String = &quote_string(self.url.clone());
+        
         let mut text = vec!["\"", self.from.as_str(), "\" ",
-                            edge_symbol, " ",
-                            "\"", self.to.as_str(), "\"",];
-
+        edge_symbol, " ",
+        "\"", self.to.as_str(), "\"",];
+        
         text.push("[label=");
         text.push(escaped_label.as_str());
         text.push("]");
+        
+    if !self.label_url.is_empty(){
+        text.push("[labelURL=");
+        text.push(escaped_label_url.as_str());
+        text.push("]");
+    }
+    
+    if !self.url.is_empty(){
+        text.push("[URL=");
+        text.push(escaped_url.as_str());
+        text.push("]");
+    }
 
         if self.style != Style::None {
             text.push("[style=\"");
