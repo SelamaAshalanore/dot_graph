@@ -1,30 +1,35 @@
 /// each node is an index in a vector in the graph.
 // pub type Node = usize;
-
-use crate::{
-    style::Style,
-    utils::{quote_string},
-};
+use crate::{style::Style, utils::quote_string};
 
 /// `Graph`'s node
 #[derive(Clone)]
 pub struct Node {
     pub name: String,
-    label: String,
+    label: Option<String>,
     style: Style,
     color: Option<String>,
     shape: Option<String>,
-    url: String
+    url: String,
+    attribs: Vec<String>,
 }
 
 impl Node {
     pub fn new(name: &str) -> Self {
-        Node { name: new_name(name), label: String::from(name), style: Style::None, color: None, shape: None, url: Default::default() }
+        Node {
+            name: new_name(name),
+            label: None,
+            style: Style::None,
+            color: None,
+            shape: None,
+            url: Default::default(),
+            attribs: vec![],
+        }
     }
 
     pub fn label(&self, label: &str) -> Self {
         let mut node = self.clone();
-        node.label = String::from(label);
+        node.label = Some(String::from(label));
         node
     }
 
@@ -38,7 +43,7 @@ impl Node {
         let mut node = self.clone();
         match shape {
             Some(s) => node.shape = Some(String::from(s)),
-            None => node.shape = None
+            None => node.shape = None,
         }
         node
     }
@@ -47,7 +52,7 @@ impl Node {
         let mut node = self.clone();
         node.color = match color {
             Some(c) => Some(String::from(c)),
-            None => None
+            None => None,
         };
         node
     }
@@ -58,18 +63,38 @@ impl Node {
         node
     }
 
+    pub fn attrib(&self, name: &str, value: &str) -> Self {
+        let mut node = self.clone();
+        node.attribs.push(format!("{}={}", name, value));
+        node
+    }
+
     pub fn to_dot_string(&self) -> String {
         let colorstring: String;
 
-        let escaped_label: String = quote_string(self.label.clone());
         let escaped_url: String = quote_string(self.url.clone());
         let shape: String;
 
         let mut text = vec!["\"", self.name.as_str(), "\""];
 
-        text.push("[label=");
-        text.push(escaped_label.as_str());
-        text.push("]");
+        let escaped_label: String = if self.label.is_some() {
+            quote_string(self.label.clone().unwrap())
+        } else {
+            quote_string("".to_owned())
+        };
+
+        if self.label.is_some() {
+            text.push("[label=");
+            text.push(escaped_label.as_str());
+            text.push("]");
+        }
+
+        let binding = self.attribs.join(",");
+        if !self.attribs.is_empty() {
+            text.push("[");
+            text.push(binding.as_str());
+            text.push("]");
+        }
 
         if !self.url.is_empty() {
             text.push("[URL=");
@@ -100,7 +125,6 @@ impl Node {
         text.push(";");
         return text.into_iter().collect();
     }
-
 }
 
 /// Check if the node's name is illegal.
@@ -126,7 +150,7 @@ fn new_name(name: &str) -> String {
     if !chars.all(is_constituent) {
         panic!("The name of the node should only contain letter/number/underscore/dot")
     }
-        return String::from(name);
+    return String::from(name);
 
     fn is_letter_or_underscore_or_dot(c: char) -> bool {
         in_range('a', c, 'z') || in_range('A', c, 'Z') || c == '_' || c == '.'
