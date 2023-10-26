@@ -6,11 +6,6 @@ use crate::{style::Style, utils::quote_string};
 #[derive(Clone)]
 pub struct Node {
     pub name: String,
-    label: Option<String>,
-    style: Style,
-    color: Option<String>,
-    shape: Option<String>,
-    url: String,
     attribs: Vec<String>,
 }
 
@@ -18,49 +13,28 @@ impl Node {
     pub fn new(name: &str) -> Self {
         Node {
             name: new_name(name),
-            label: None,
-            style: Style::None,
-            color: None,
-            shape: None,
-            url: Default::default(),
             attribs: vec![],
         }
     }
 
     pub fn label(&self, label: &str) -> Self {
-        let mut node = self.clone();
-        node.label = Some(String::from(label));
-        node
+        self.attrib("label", label)
     }
 
     pub fn style(&self, style: Style) -> Self {
-        let mut node = self.clone();
-        node.style = style;
-        node
+        self.attrib("style", style.as_slice())
     }
 
-    pub fn shape(&self, shape: Option<&str>) -> Self {
-        let mut node = self.clone();
-        match shape {
-            Some(s) => node.shape = Some(String::from(s)),
-            None => node.shape = None,
-        }
-        node
+    pub fn shape(&self, shape: &str) -> Self {
+        self.attrib("shape", shape)
     }
 
-    pub fn color(&self, color: Option<&str>) -> Self {
-        let mut node = self.clone();
-        node.color = match color {
-            Some(c) => Some(String::from(c)),
-            None => None,
-        };
-        node
+    pub fn color(&self, color: &str) -> Self {
+        self.attrib("color", &quote_string(color.to_owned()))
     }
 
     pub fn url(&mut self, url: String) -> Self {
-        let mut node = self.clone();
-        node.url = url;
-        node
+        self.attrib("URL", &quote_string(url.to_owned()))
     }
 
     pub fn attrib(&self, name: &str, value: &str) -> Self {
@@ -70,24 +44,7 @@ impl Node {
     }
 
     pub fn to_dot_string(&self) -> String {
-        let colorstring: String;
-
-        let escaped_url: String = quote_string(self.url.clone());
-        let shape: String;
-
         let mut text = vec!["\"", self.name.as_str(), "\""];
-
-        let escaped_label: String = if self.label.is_some() {
-            quote_string(self.label.clone().unwrap())
-        } else {
-            quote_string("".to_owned())
-        };
-
-        if self.label.is_some() {
-            text.push("[label=");
-            text.push(escaped_label.as_str());
-            text.push("]");
-        }
 
         let binding = self.attribs.join(",");
         if !self.attribs.is_empty() {
@@ -95,33 +52,6 @@ impl Node {
             text.push(binding.as_str());
             text.push("]");
         }
-
-        if !self.url.is_empty() {
-            text.push("[URL=");
-            text.push(escaped_url.as_str());
-            text.push("]");
-        }
-
-        if self.style != Style::None {
-            text.push("[style=\"");
-            text.push(self.style.as_slice());
-            text.push("\"]");
-        }
-
-        if let Some(c) = &self.color {
-            colorstring = quote_string(c.to_string());
-            text.push("[color=");
-            text.push(&colorstring);
-            text.push("]");
-        }
-
-        if let Some(s) = self.shape.clone() {
-            shape = s;
-            text.push("[shape=\"");
-            text.push(&shape);
-            text.push("\"]");
-        }
-
         text.push(";");
         return text.into_iter().collect();
     }

@@ -77,7 +77,7 @@ impl Graph {
 
         for attrib in &self.attribs {
             indent(w)?;
-            writeln(w, &[&attrib])?;
+            writeln(w, &[&attrib, ";"])?;
         }
 
         if !self.url.is_empty() {
