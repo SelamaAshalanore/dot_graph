@@ -1,52 +1,41 @@
-use crate::{
-    arrow::{Arrow},
-    style::{Style},
-    utils::{quote_string},
-};
+use crate::{arrow::Arrow, style::Style, utils::quote_string};
 
 /// `Graph`'s edge.
 #[derive(Clone)]
 pub struct Edge {
     from: String,
     to: String,
-    label: String,
-    label_url: String,
-    url: String,
-    style: Style,
     start_arrow: Arrow,
     end_arrow: Arrow,
-    color: Option<String>,
+    attribs: Vec<String>,
 }
 
 impl Edge {
-    pub fn new(from: &str, to: &str, label: &str) -> Self {
-        Edge { 
-            from: String::from(from), to: String::from(to), 
-            label: String::from(label), label_url: Default::default(),
-            color: None, style: Style::None, 
-            start_arrow: Arrow::default(), end_arrow: Arrow::default(),
-            url: Default::default() 
+    pub fn new(from: &str, to: &str) -> Self {
+        Edge {
+            from: String::from(from),
+            to: String::from(to),
+            start_arrow: Arrow::default(),
+            end_arrow: Arrow::default(),
+            attribs: vec![],
         }
     }
 
     pub fn label(&mut self, label: &str) -> Self {
-        let mut edge = self.clone();
-        edge.label = String::from(label);
-        edge
+        self.attrib("label", label)
     }
 
     pub fn style(&mut self, style: Style) -> Self {
-        let mut edge = self.clone();
-        edge.style = style;
-        edge
+        self.attrib("style", style.as_slice())
     }
 
-    pub fn color(&mut self, color: Option<&str>) -> Self {
+    pub fn color(&mut self, color: &str) -> Self {
+        self.attrib("color", &quote_string(color.to_owned()))
+    }
+
+    pub fn attrib(&self, name: &str, value: &str) -> Self {
         let mut edge = self.clone();
-        edge.color = match color {
-            Some(c) => Some(String::from(c)),
-            None => None
-        };
+        edge.attribs.push(format!("{}={}", name, value));
         edge
     }
 
@@ -62,62 +51,33 @@ impl Edge {
         edge
     }
 
-    pub fn label_url(&mut self, url: String) -> Self {
-        let mut edge = self.clone();
-        edge.label_url = url;
-        edge
+    pub fn label_url(&mut self, url: &str) -> Self {
+        self.attrib("labelURL", &quote_string(url.to_owned()))
     }
 
-    pub fn url(&mut self, url: String) -> Self {
-        let mut edge = self.clone();
-        edge.url = url;
-        edge
+    pub fn url(&mut self, url: &str) -> Self {
+        self.attrib("URL", &quote_string(url.to_owned()))
     }
 
     pub fn to_dot_string(&self, edge_symbol: &str) -> String {
-        let colorstring: String;
-        let escaped_label: &String = &quote_string(self.label.clone());
         let start_arrow_s: String = self.start_arrow.to_dot_string();
         let end_arrow_s: String = self.end_arrow.to_dot_string();
-        let escaped_label_url: &String = &quote_string(self.label_url.clone());
-        let escaped_url: &String = &quote_string(self.url.clone());
-        
-        let mut text = vec!["\"", self.from.as_str(), "\" ",
-        edge_symbol, " ",
-        "\"", self.to.as_str(), "\"",];
-        
-        text.push("[label=");
-        text.push(escaped_label.as_str());
-        text.push("]");
-        
-    if !self.label_url.is_empty(){
-        text.push("[labelURL=");
-        text.push(escaped_label_url.as_str());
-        text.push("]");
-    }
-    
-    if !self.url.is_empty(){
-        text.push("[URL=");
-        text.push(escaped_url.as_str());
-        text.push("]");
-    }
 
-        if self.style != Style::None {
-            text.push("[style=\"");
-            text.push(self.style.as_slice());
-            text.push("\"]");
-        }
+        let mut text = vec![
+            "\"",
+            self.from.as_str(),
+            "\" ",
+            edge_symbol,
+            " ",
+            "\"",
+            self.to.as_str(),
+            "\"",
+        ];
 
-        let color: Option<String> = match &self.color {
-            Some(l) => {
-                Some((*l).clone())
-            },
-            None => None,
-        };
-        if let Some(c) = color {
-            colorstring = quote_string(c);
-            text.push("[color=");
-            text.push(&colorstring);
+        let binding = self.attribs.join(",");
+        if !self.attribs.is_empty() {
+            text.push("[");
+            text.push(binding.as_str());
             text.push("]");
         }
 
@@ -125,10 +85,18 @@ impl Edge {
         let mut arrow_str: String = String::new();
         if !self.start_arrow.is_default() || !self.end_arrow.is_default() {
             if !self.end_arrow.is_default() {
-                arrow_text.push(vec!["arrowhead=\"", &end_arrow_s, "\""].into_iter().collect());
+                arrow_text.push(
+                    vec!["arrowhead=\"", &end_arrow_s, "\""]
+                        .into_iter()
+                        .collect(),
+                );
             }
             if !self.start_arrow.is_default() {
-                arrow_text.push(vec!["arrowtail=\"", &start_arrow_s, "\""].into_iter().collect());
+                arrow_text.push(
+                    vec!["arrowtail=\"", &start_arrow_s, "\""]
+                        .into_iter()
+                        .collect(),
+                );
             }
             if !self.start_arrow.is_default() && !self.end_arrow.is_default() {
                 arrow_text.push(String::from("dir=\"both\""));
@@ -140,7 +108,6 @@ impl Edge {
             arrow_str.push_str("]");
             text.push(arrow_str.as_str());
         }
-
         text.push(";");
         return text.into_iter().collect();
     }
